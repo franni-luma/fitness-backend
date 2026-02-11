@@ -5,30 +5,42 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>Vitaldaten</h1>
-  <canvas id="chart"></canvas>
 
-  <script>
-    async function loadData() {
-      const res = await fetch("/vitals");
-      const data = await res.json();
+<h2>Live Puls</h2>
+<canvas id="pulseChart"></canvas>
 
-      const pulse = data.map(d => d.pulse).reverse();
-      const time  = data.map(d => d.time).reverse();
+<script>
+let chart;
 
-      new Chart(document.getElementById("chart"), {
-        type: "line",
-        data: {
-          labels: time,
-          datasets: [{
-            label: "Puls",
-            data: pulse
-          }]
-        }
-      });
-    }
+async function loadData() {
+  const res = await fetch("/vitals");
+  const data = await res.json();
 
-    loadData();
-  </script>
+  const pulse = data.map(d => d.pulse).reverse();
+  const labels = data.map(d => new Date(d.time * 1000).toLocaleTimeString()).reverse();
+
+  if (!chart) {
+    chart = new Chart(document.getElementById("pulseChart"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Puls",
+          data: pulse,
+          borderColor: "red"
+        }]
+      }
+    });
+  } else {
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = pulse;
+    chart.update();
+  }
+}
+
+loadData();
+setInterval(loadData, 5000); // alle 5 Sekunden aktualisieren
+</script>
+
 </body>
 </html>

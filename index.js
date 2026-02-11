@@ -37,7 +37,7 @@ app.listen(process.env.PORT || 3000, () => {
 app.get("/vitals", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM vitals ORDER BY id DESC LIMIT 500"
+      "SELECT * FROM vitals ORDER BY id DESC LIMIT 100"
     );
     res.json(result.rows);
   } catch (err) {
