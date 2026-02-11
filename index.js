@@ -18,7 +18,7 @@ app.post("/vitals", async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO vitals(pulse, spo2, ts) VALUES($1,$2,to_timestamp($3))",
+      "INSERT INTO vitals(pulse, spo2, time) VALUES($1,$2,to_timestamp($3))",
       [pulse, spo2, timestamp]
     );
     res.status(200).send("OK");
