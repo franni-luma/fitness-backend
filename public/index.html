@@ -74,6 +74,13 @@ canvas {
   width: 100% !important;
   height: 300px !important;
 }
+
+.small { 
+  font-size:12px; 
+  opacity:0.7; 
+  margin-top:6px;
+}
+
 </style>
 </head>
 
@@ -88,12 +95,14 @@ canvas {
     <div>Puls</div>
     <h2 id="pulseValue">--</h2>
     <div id="pulseTime"></div>
+    <div class="small">bpm</div>
   </div>
 
   <div class="stat">
     <div>SpO₂</div>
     <h2 id="spo2Value">--</h2>
     <div id="spo2Time"></div>
+    <div class="small">%</div>
   </div>
 </div>
 
@@ -166,7 +175,6 @@ async function loadData() {
       data: {
         labels: labels,
         datasets: [{
-          label: "Puls",
           data: pulse,
           borderColor: "#3cc6ff",
           tension: 0.4
@@ -179,7 +187,6 @@ async function loadData() {
       data: {
         labels: labels,
         datasets: [{
-          label: "SpO₂",
           data: spo2,
           borderColor: "#ff4d7a",
           tension: 0.4
