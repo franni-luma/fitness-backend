@@ -1,60 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <title>Fitness Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #081421, #0f1f2f);
+  color: white;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: #122436;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat {
+  text-align: center;
+  flex: 1;
+}
+
+.stat h2 {
+  font-size: 40px;
+  margin: 10px 0;
+  color: #3cc6ff;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  background: #1a3147;
+  text-align: center;
+  cursor: pointer;
+}
+
+.button.active {
+  background: #3cc6ff;
+  color: black;
+  font-weight: bold;
+}
+
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Live Puls</h2>
-<canvas id="pulseChart"></canvas>
+<div class="container">
+
+<h1>Hallo Franziska & Lukas 👋</h1>
+
+<div class="card flex">
+  <div class="stat">
+    <div>Puls</div>
+    <h2 id="pulseValue">--</h2>
+    <div id="pulseTime"></div>
+  </div>
+
+  <div class="stat">
+    <div>SpO₂</div>
+    <h2 id="spo2Value">--</h2>
+    <div id="spo2Time"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="buttons">
+    <div class="button active" onclick="setRange(1)">1 Stunde</div>
+    <div class="button" onclick="setRange(24)">24 Stunden</div>
+    <div class="button" onclick="setRange(168)">7 Tage</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Pulsverlauf</h3>
+  <canvas id="pulseChart"></canvas>
+</div>
+
+<div class="card">
+  <h3>SpO₂-Verlauf</h3>
+  <canvas id="spo2Chart"></canvas>
+</div>
+
+</div>
 
 <script>
-let chart;
+let pulseChart;
+let spo2Chart;
+let currentHours = 1;
+
+function setRange(hours) {
+  currentHours = hours;
+
+  document.querySelectorAll(".button").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  loadData();
+}
 
 async function loadData() {
   const res = await fetch("/vitals");
-  const data = await res.json();
+  let data = await res.json();
 
-  console.log(data);  
-  console.log(data[0].time); // optional noch genauer
+  const now = new Date();
+  const cutoff = new Date(now - currentHours * 60 * 60 * 1000);
 
-  const pulse = data.map(d => d.pulse).reverse();
-  const labels = data.map(d => { 
-	const date = new Date(d.time);
-	return date.toLocaleString("de-DE", {
-    		timeZone: "Europe/Berlin",
-    		year: "numeric",
-    		month: "2-digit",
-    		day: "2-digit",
-    		hour: "2-digit",
-    		minute: "2-digit",
-    		second: "2-digit"
-  	});
-  }).reverse();
+  data = data.filter(d => new Date(d.time) > cutoff);
 
+  data.reverse();
 
-  if (!chart) {
-    chart = new Chart(document.getElementById("pulseChart"), {
+  const labels = data.map(d => {
+    const date = new Date(d.time);
+    return date.toLocaleTimeString("de-DE");
+  });
+
+  const pulse = data.map(d => d.pulse);
+  const spo2 = data.map(d => d.spo2);
+
+  if (data.length > 0) {
+    const latest = data[data.length - 1];
+    document.getElementById("pulseValue").innerText = latest.pulse;
+    document.getElementById("spo2Value").innerText = latest.spo2 + "%";
+    document.getElementById("pulseTime").innerText =
+      new Date(latest.time).toLocaleTimeString("de-DE");
+    document.getElementById("spo2Time").innerText =
+      new Date(latest.time).toLocaleTimeString("de-DE");
+  }
+
+  if (!pulseChart) {
+    pulseChart = new Chart(document.getElementById("pulseChart"), {
       type: "line",
       data: {
         labels: labels,
         datasets: [{
           label: "Puls",
           data: pulse,
-          borderColor: "red"
+          borderColor: "#3cc6ff",
+          tension: 0.4
         }]
       }
     });
+
+    spo2Chart = new Chart(document.getElementById("spo2Chart"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "SpO₂",
+          data: spo2,
+          borderColor: "#ff4d7a",
+          tension: 0.4
+        }]
+      }
+    });
+
   } else {
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = pulse;
-    chart.update();
+    pulseChart.data.labels = labels;
+    pulseChart.data.datasets[0].data = pulse;
+    pulseChart.update();
+
+    spo2Chart.data.labels = labels;
+    spo2Chart.data.datasets[0].data = spo2;
+    spo2Chart.update();
   }
 }
 
 loadData();
-setInterval(loadData, 5000); // alle 5 Sekunden aktualisieren
+setInterval(loadData, 5000);
 </script>
 
 </body>
