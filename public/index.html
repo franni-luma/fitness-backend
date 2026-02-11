@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fitness Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Vitaldaten</h1>
+  <canvas id="chart"></canvas>
+
+  <script>
+    async function loadData() {
+      const res = await fetch("/vitals");
+      const data = await res.json();
+
+      const pulse = data.map(d => d.pulse).reverse();
+      const time  = data.map(d => d.time).reverse();
+
+      new Chart(document.getElementById("chart"), {
+        type: "line",
+        data: {
+          labels: time,
+          datasets: [{
+            label: "Puls",
+            data: pulse
+          }]
+        }
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
