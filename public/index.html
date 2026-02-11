@@ -17,7 +17,7 @@ async function loadData() {
   const data = await res.json();
 
   const pulse = data.map(d => d.pulse).reverse();
-  const labels = data.map(d => new Date(d.time * 1000).toLocaleTimeString()).reverse();
+  const labels = data.map(d => new Date(d.time).toLocaleTimeString()).reverse();
 
   if (!chart) {
     chart = new Chart(document.getElementById("pulseChart"), {
@@ -27,7 +27,7 @@ async function loadData() {
         datasets: [{
           label: "Puls",
           data: pulse,
-          borderColor: "red"
+          borderColor: "blue"
         }]
       }
     });
