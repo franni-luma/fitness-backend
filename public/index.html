@@ -176,9 +176,16 @@ async function loadData() {
         labels: labels,
         datasets: [{
           data: pulse,
-          borderColor: "#3cc6ff",
+          borderColor: "#ff4d7a",
           tension: 0.4
         }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
       }
     });
 
@@ -188,9 +195,16 @@ async function loadData() {
         labels: labels,
         datasets: [{
           data: spo2,
-          borderColor: "#ff4d7a",
+          borderColor: "#3cc6ff",
           tension: 0.4
         }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
       }
     });
 
