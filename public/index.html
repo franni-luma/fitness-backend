@@ -81,6 +81,13 @@ canvas {
   margin-top:6px;
 }
 
+.value { 
+  font-size:36px; 
+  font-weight:bold; 
+  color:#4dd2ff; 
+  margin-top:10px; 
+}
+
 </style>
 </head>
 
@@ -144,8 +151,17 @@ canvas {
   <div class="card flex">
     <div class="stat">
       <div>Alter</div>
-      <h2>23</h2>
+      <input 
+        type="number" 
+        id="ageInput" 
+        min="1" 
+        max="120" 
+        placeholder="Alter eingeben"
+        oninput="updateMaxPulse()"
+        style="width:80px; padding:8px; border-radius:10px; border:none; text-align:center; font-size:18px;"
+      >
     </div>
+
     <div class="stat">
       <div>Maximalpuls</div>
       <h2 id="maxPulse">-- bpm</h2>
@@ -166,11 +182,11 @@ canvas {
   <div class="card">
     <h3>Erklärung der Herzfrequenzzonen:</h3>
     <ul>
-      <li><b>50–60%</b> Gesundheitszone</li>
-      <li><b>60–70%</b> Fettverbrennung</li>
-      <li><b>70–80%</b> Aerob</li>
-      <li><b>80–90%</b> Anaerob</li>
-      <li><b>90–100%</b> Extrem</li>
+      <li><span class="value">50–60%</span> Gesundheitszone: Förderung der Gesundheit</li>
+      <li><span class="value">60–70%</span> Fettverbrennung: Aktivierung es Fettstoffwechsels/ Verbesserung der Grundlagenausdauer</li>
+      <li><span class="value">70–80%</span> Aerob: Steigerung der Ausdauerleistungsfähigkeit</li>
+      <li><span class="value">80–90%</span> Anaerob: Verbessung der Laktattoleranz/ Training für maximalen Leistungszuwachs</li>
+      <li><span class="value">90–100%</span> Extrem: Verbesserung der maximale Leistung und Geschwindigkeit</li>
     </ul>
   </div>
 
@@ -290,6 +306,28 @@ async function loadData() {
     spo2Chart.update();
   }
 }
+
+function updateMaxPulse() {
+  const age = parseInt(document.getElementById("ageInput").value);
+
+  if (!age || age <= 0) {
+    document.getElementById("maxPulse").innerText = "-- bpm";
+    return;
+  }
+
+  const max = 220 - age;
+  document.getElementById("maxPulse").innerText = max + " bpm";
+
+  localStorage.setItem("age", age);
+}
+
+window.onload = function() {
+  const savedAge = localStorage.getItem("age");
+  if (savedAge) {
+    document.getElementById("ageInput").value = savedAge;
+    updateMaxPulse();
+  }
+};
 
 loadData();
 setInterval(loadData, 5000);
