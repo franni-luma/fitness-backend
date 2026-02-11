@@ -92,46 +92,90 @@ canvas {
 
 <div class="card">
   <div class="buttons">
-    <div class="button active" onclick="setRange(1)">Vitaldaten</div>
-    <div class="button" onclick="setRange(24)">Pulsbereiche</div>
+    <div class="button active" onclick="switchTab('vital')" id="tabVital">
+      Vitaldaten
+    </div>
+    <div class="button" onclick="switchTab('zones')" id="tabZones">
+      Pulsbereiche
+    </div>
   </div>
 </div>
 
-<div class="card flex">
-  <div class="stat">
-    <div>Puls</div>
-    <h2 id="pulseValue">--</h2>
-    <div id="pulseTime"></div>
-    <div class="small">bpm</div>
+<div id="vitalSection">
+  <div class="card flex">
+    <div class="stat">
+      <div>Puls</div>
+      <h2 id="pulseValue">--</h2>
+      <div id="pulseTime"></div>
+      <div class="small">bpm</div>
+    </div>
+
+    <div class="stat">
+      <div>SpO₂</div>
+      <h2 id="spo2Value">--</h2>
+      <div id="spo2Time"></div>
+      <div class="small">%</div>
+    </div>
   </div>
 
-  <div class="stat">
-    <div>SpO₂</div>
-    <h2 id="spo2Value">--</h2>
-    <div id="spo2Time"></div>
-    <div class="small">%</div>
+  <div class="card">
+    <div class="buttons">
+      <div class="button active" onclick="setRange(1)">1 Stunde</div>
+      <div class="button" onclick="setRange(24)">24 Stunden</div>
+      <div class="button" onclick="setRange(168)">7 Tage</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Pulsverlauf</h3>
+    <canvas id="pulseChart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>SpO₂-Verlauf</h3>
+    <canvas id="spo2Chart"></canvas>
+  </div>
+
   </div>
 </div>
 
-<div class="card">
-  <div class="buttons">
-    <div class="button active" onclick="setRange(1)">1 Stunde</div>
-    <div class="button" onclick="setRange(24)">24 Stunden</div>
-    <div class="button" onclick="setRange(168)">7 Tage</div>
+<div id="zoneSection" style="display:none;">
+
+  <div class="card flex">
+    <div class="stat">
+      <div>Alter</div>
+      <h2>23</h2>
+    </div>
+    <div class="stat">
+      <div>Maximalpuls</div>
+      <h2 id="maxPulse">-- bpm</h2>
+    </div>
   </div>
+
+  <div class="card">
+    <h3>Zeit in den Herzfrequenzzonen:</h3>
+    <div id="zoneTimes">
+      Extrem: 0 Min<br>
+      Anaerob: 0 Min<br>
+      Aerob: 0 Min<br>
+      Fettverbrennung: 0 Min<br>
+      Gesundheitszone: 0 Min
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Erklärung der Herzfrequenzzonen:</h3>
+    <ul>
+      <li><b>50–60%</b> Gesundheitszone</li>
+      <li><b>60–70%</b> Fettverbrennung</li>
+      <li><b>70–80%</b> Aerob</li>
+      <li><b>80–90%</b> Anaerob</li>
+      <li><b>90–100%</b> Extrem</li>
+    </ul>
+  </div>
+
 </div>
 
-<div class="card">
-  <h3>Pulsverlauf</h3>
-  <canvas id="pulseChart"></canvas>
-</div>
-
-<div class="card">
-  <h3>SpO₂-Verlauf</h3>
-  <canvas id="spo2Chart"></canvas>
-</div>
-
-</div>
 
 <script>
 let pulseChart;
@@ -146,6 +190,23 @@ function setRange(hours) {
 
   loadData();
 }
+
+function switchTab(tab) {
+
+  document.getElementById("tabVital").classList.remove("active");
+  document.getElementById("tabZones").classList.remove("active");
+
+  if (tab === "vital") {
+    document.getElementById("vitalSection").style.display = "block";
+    document.getElementById("zoneSection").style.display = "none";
+    document.getElementById("tabVital").classList.add("active");
+  } else {
+    document.getElementById("vitalSection").style.display = "none";
+    document.getElementById("zoneSection").style.display = "block";
+    document.getElementById("tabZones").classList.add("active");
+  }
+}
+
 
 async function loadData() {
   const res = await fetch("/vitals");
@@ -162,6 +223,10 @@ async function loadData() {
     const date = new Date(d.time);
     return date.toLocaleTimeString("de-DE");
   });
+  
+  const age = 23;
+  const max = 220 - age;
+  document.getElementById("maxPulse").innerText = max + " bpm";
 
   const pulse = data.map(d => d.pulse);
   const spo2 = data.map(d => d.spo2);
@@ -169,7 +234,7 @@ async function loadData() {
   if (data.length > 0) {
     const latest = data[data.length - 1];
     document.getElementById("pulseValue").innerText = latest.pulse;
-    document.getElementById("spo2Value").innerText = latest.spo2 + "%";
+    document.getElementById("spo2Value").innerText = latest.spo2;
     document.getElementById("pulseTime").innerText =
       new Date(latest.time).toLocaleTimeString("de-DE");
     document.getElementById("spo2Time").innerText =
