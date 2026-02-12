@@ -301,44 +301,66 @@ async function loadData() {
 
   else if (currentHours === 168) {
 
-    const now = Math.floor(Date.now() / 1000);
-    const DAY = 24 * 3600;
+    const now = new Date();
+    const days = [];
 
-    const buckets = Array.from({length: 7}, (_, i) => ({
-        pulseSum: 0,
-        spo2Sum: 0,
-        cnt: 0,
-        ts: now - (6 - i) * DAY
-    }));
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      d.setHours(0,0,0,0);
+      days.push(d);
+    }
 
-    data.forEach(d => {
+    let lastPulse = null;
+    let lastSpo2 = null;
 
-        const ts = Math.floor(new Date(d.time).getTime() / 1000);
-        const diff = now - ts;
+    days.forEach(day => {
 
-        if (diff < 0 || diff > 7 * DAY) return;
+      const dateString = day.toISOString().split("T")[0];
 
-        const idx = 6 - Math.floor(diff / DAY);
-        if (idx < 0 || idx > 6) return;
+      const morning = data.find(d =>
+        d.halfday.startsWith(dateString) &&
+        new Date(d.halfday).getHours() === 0
+      );
 
-        buckets[idx].pulseSum += Number(d.pulse);
-        buckets[idx].spo2Sum  += Number(d.spo2);
-        buckets[idx].cnt++;
+      const noon = data.find(d =>
+        d.halfday.startsWith(dateString) &&
+        new Date(d.halfday).getHours() === 12
+      );
+
+      // 🔵 Vormittag
+      if (morning) {
+        lastPulse = Number(morning.pulse);
+        lastSpo2 = Number(morning.spo2);
+      }
+
+      labels.push(day.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit"
+      }));
+
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
+
+      // 🔵 Nachmittag
+      if (noon) {
+        lastPulse = Number(noon.pulse);
+        lastSpo2 = Number(noon.spo2);
+      }
+
+      labels.push(day.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit"
+      }));
+
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
+
     });
-
-    labels = buckets.map(b => {
-        const d = new Date(b.ts * 1000);
-        return d.toLocaleDateString("de-DE");
-    });
-
-    pulse = buckets.map(b =>
-        b.cnt ? Math.round(b.pulseSum / b.cnt) : null
-    );
-
-    spo2 = buckets.map(b =>
-        b.cnt ? Math.round(b.spo2Sum / b.cnt) : null
-    );
   }
+
 
   else {
 
@@ -360,15 +382,13 @@ async function loadData() {
         datasets: [{
           data: pulse,
           borderColor: "#ff4d7a",
-          tension: 0.4,
-          spanGaps: true
+          tension: 0.4
         }]
       },
       options: {
         plugins: {
           legend: {
-            display: false,
-            spanGaps: true
+            display: false
           }
         }
       }
