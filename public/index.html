@@ -228,12 +228,12 @@ async function loadData() {
   const res = await fetch(currentHours === 24 ? "/vitals?range=24h" : "/vitals");
   let data = await res.json();
 
+  if (currentHours !== 24) {
   const now = new Date();
   const cutoff = new Date(now - currentHours * 60 * 60 * 1000);
-
   data = data.filter(d => new Date(d.time) > cutoff);
-
   data.reverse();
+}
 
   const labels = data.map(d => {
   const date = new Date(d.hour || d.time);
