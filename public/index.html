@@ -315,9 +315,12 @@ async function loadData() {
 
     days.forEach(day => {
 
-      const match = data.find(d =>
-        new Date(d.day).getTime() === day.getTime()
-      );
+      const match = data.find(d => {
+        const backendDate = new Date(d.day).toLocaleDateString("de-DE");
+        const currentDate = day.toLocaleDateString("de-DE");
+        return backendDate === currentDate;
+      });
+
 
       if (match) {
         lastPulse = Number(match.pulse);
