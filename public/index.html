@@ -201,7 +201,7 @@ let currentHours = 1;
 function setRange(hours) {
   currentHours = hours;
 
-  document.querySelectorAll("#vitalSection.button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("#vitalSection .button").forEach(b => b.classList.remove("active"));
   event.target.classList.add("active");
 
   loadData();
@@ -301,65 +301,44 @@ async function loadData() {
 
   else if (currentHours === 168) {
 
-    const now = new Date();
-    const days = [];
+  const now = new Date();
+  const days = [];
 
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      d.setHours(0,0,0,0);
-      days.push(d);
-    }
-
-    let lastPulse = null;
-    let lastSpo2 = null;
-
-    days.forEach(day => {
-
-      const morning = new Date(day);
-      const noon = new Date(day);
-      noon.setHours(12);
-
-      const morningMatch = data.find(d =>
-        new Date(d.halfday).getTime() === morning.getTime()
-      );
-
-      const noonMatch = data.find(d =>
-        new Date(d.halfday).getTime() === noon.getTime()
-      );
-
-      // Morgen
-      if (morningMatch) {
-        lastPulse = Number(morningMatch.pulse);
-        lastSpo2 = Number(morningMatch.spo2);
-      }
-
-      labels.push(day.toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit"
-        })
-      );
-      pulse.push(lastPulse);
-      spo2.push(lastSpo2);
-
-      // Nachmittag
-      if (noonMatch) {
-        lastPulse = Number(noonMatch.pulse);
-        lastSpo2 = Number(noonMatch.spo2);
-      }
-
-      labels.push(day.toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit"
-        })
-      );
-      pulse.push(lastPulse);
-      spo2.push(lastSpo2);
-
-    });
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    d.setHours(0,0,0,0);
+    days.push(d);
   }
+
+  let lastPulse = null;
+  let lastSpo2 = null;
+
+  days.forEach(day => {
+
+    const dayString = day.toISOString().split("T")[0];
+
+    const dayData = data.filter(d =>
+      d.halfday.startsWith(dayString)
+    );
+
+    dayData.forEach(entry => {
+      lastPulse = Number(entry.pulse);
+      lastSpo2 = Number(entry.spo2);
+
+      labels.push(day.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit"
+      }));
+
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
+    });
+
+  });
+}
+
 
   else {
 
