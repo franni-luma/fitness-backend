@@ -233,35 +233,85 @@ async function loadData() {
   const cutoff = new Date(now - currentHours * 60 * 60 * 1000);
   data = data.filter(d => new Date(d.time) > cutoff);
   data.reverse();
-}
+  }
 
-  const labels = data.map(d => {
-  const date = new Date(d.hour || d.time);
+  let labels = [];
+  let pulse = [];
+  let spo2 = [];
 
+  // 🔵 24 Stunden Spezialbehandlung
   if (currentHours === 24) {
-    return date.toLocaleDateString("de-DE", {
-      day: "2-digit",
-      month: "2-digit"
-    }) + " " +
-    date.getHours().toString().padStart(2, "0") + ":00";
+
+    // 🔹 Aktuelle Live-Werte separat laden
+    const liveRes = await fetch("/vitals");
+    const liveData = await liveRes.json();
+
+    if (liveData.length > 0) {
+      const latest = liveData[0];
+      document.getElementById("pulseValue").innerText = latest.pulse;
+      document.getElementById("spo2Value").innerText = latest.spo2;
+      document.getElementById("pulseTime").innerText =
+        new Date(latest.time).toLocaleTimeString("de-DE");
+      document.getElementById("spo2Time").innerText =
+        new Date(latest.time).toLocaleTimeString("de-DE");
+    }
+
+    const now = new Date();
+    const hours = [];
+
+    for (let i = 23; i >= 0; i--) {
+      const d = new Date(now);
+      d.setHours(now.getHours() - i);
+      d.setMinutes(0,0,0);
+      hours.push(d);
+    }
+
+    let lastPulse = null;
+    let lastSpo2 = null;
+
+    hours.forEach(h => {
+
+      const match = data.find(d =>
+        new Date(d.hour).getTime() === h.getTime()
+      );
+
+      if (match) {
+        lastPulse = Number(match.pulse);
+        lastSpo2 = Number(match.spo2);
+      }
+
+      labels.push(
+        h.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}) +
+        " " +
+        h.getHours().toString().padStart(2,"0") + ":00"
+      );
+
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
+    });
+
+  } 
+  else {
+
+    // 🔹 Normale 1h / 7 Tage Ansicht
+    labels = data.map(d =>
+      new Date(d.time).toLocaleTimeString("de-DE")
+    );
+
+    pulse = data.map(d => Number(d.pulse));
+    spo2 = data.map(d => Number(d.spo2));
+
+    if (data.length > 0) {
+      const latest = data[data.length - 1];
+      document.getElementById("pulseValue").innerText = latest.pulse;
+      document.getElementById("spo2Value").innerText = latest.spo2;
+      document.getElementById("pulseTime").innerText =
+        new Date(latest.time).toLocaleTimeString("de-DE");
+      document.getElementById("spo2Time").innerText =
+        new Date(latest.time).toLocaleTimeString("de-DE");
+    }
   }
 
-  return date.toLocaleTimeString("de-DE");
-});
-
-
-  const pulse = data.map(d => d.pulse);
-  const spo2 = data.map(d => d.spo2);
-
-  if (data.length > 0) {
-    const latest = data[data.length - 1];
-    document.getElementById("pulseValue").innerText = latest.pulse;
-    document.getElementById("spo2Value").innerText = latest.spo2;
-    document.getElementById("pulseTime").innerText =
-      new Date(latest.time).toLocaleTimeString("de-DE");
-    document.getElementById("spo2Time").innerText =
-      new Date(latest.time).toLocaleTimeString("de-DE");
-  }
 
   if (!pulseChart) {
     pulseChart = new Chart(document.getElementById("pulseChart"), {
