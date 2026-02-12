@@ -35,14 +35,40 @@ app.listen(process.env.PORT || 3000, () => {
 });
 
 app.get("/vitals", async (req, res) => {
+  const range = req.query.range;
+
   try {
-    const result = await pool.query(
-      "SELECT * FROM vitals ORDER BY id DESC LIMIT 100"
-    );
+
+    if (range === "24h") {
+
+      const result = await pool.query(`
+        SELECT
+          DATE_TRUNC('hour', time) + INTERVAL '1 hour' AS hour,
+          AVG(pulse) AS pulse,
+          AVG(spo2) AS spo2
+        FROM vitals
+        WHERE time >= NOW() - INTERVAL '24 hours'
+        GROUP BY hour
+        ORDER BY hour ASC
+      `);
+
+      return res.json(result.rows);
+    }
+
+    // Standard 1h 
+    const result = await pool.query(`
+      SELECT *
+      FROM vitals
+      ORDER BY id DESC
+      LIMIT 200
+    `);
+
     res.json(result.rows);
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Database error");
   }
 });
+
 

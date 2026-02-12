@@ -225,7 +225,7 @@ function switchTab(tab) {
 
 
 async function loadData() {
-  const res = await fetch("/vitals");
+  const res = await fetch(currentHours === 24 ? "/vitals?range=24h" : "/vitals");
   let data = await res.json();
 
   const now = new Date();
@@ -236,13 +236,19 @@ async function loadData() {
   data.reverse();
 
   const labels = data.map(d => {
-    const date = new Date(d.time);
-    return date.toLocaleTimeString("de-DE");
-  });
-  
-  const age = 23;
-  const max = 220 - age;
-  document.getElementById("maxPulse").innerText = max + " bpm";
+  const date = new Date(d.hour || d.time);
+
+  if (currentHours === 24) {
+    return date.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit"
+    }) + " " +
+    date.getHours().toString().padStart(2, "0") + ":00";
+  }
+
+  return date.toLocaleTimeString("de-DE");
+});
+
 
   const pulse = data.map(d => d.pulse);
   const spo2 = data.map(d => d.spo2);
