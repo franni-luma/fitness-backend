@@ -60,20 +60,18 @@ app.get("/vitals", async (req, res) => {
     if (range === "7d") {
       const result = await pool.query(`
         SELECT
-          DATE_TRUNC('day', time) +
-          CASE
-            WHEN EXTRACT(HOUR FROM time) < 12 THEN INTERVAL '0 hours'
-            ELSE INTERVAL '12 hours'
-          END AS halfday,
+          DATE_TRUNC('day', time) AS day,
           AVG(pulse) AS pulse,
           AVG(spo2) AS spo2
         FROM vitals
         WHERE time >= NOW() - INTERVAL '7 days'
-        GROUP BY halfday
-        ORDER BY halfday ASC
+        GROUP BY day
+        ORDER BY day ASC
       `);
+
       return res.json(result.rows);
     }
+
 
     // Standard 1h
     const result = await pool.query(`
