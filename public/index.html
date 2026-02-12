@@ -278,9 +278,7 @@ async function loadData() {
 
     hours.forEach(h => {
 
-      const match = data.find(d =>
-        new Date(d.hour).getTime() === h.getTime()
-      );
+      const match = data.find(d => new Date(d.hour).getTime() === h.getTime());
 
       if (match) {
         lastPulse = Number(match.pulse);
@@ -304,7 +302,7 @@ async function loadData() {
     const now = new Date();
     const days = [];
 
-    // 🔹 Immer 7 Tage erzeugen
+    // 🔹 Immer 7 feste Kalendertage erzeugen
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
@@ -312,13 +310,19 @@ async function loadData() {
       days.push(d);
     }
 
+    let lastPulse = null;
+    let lastSpo2 = null;
+
     days.forEach(day => {
 
-      const dateString = day.toISOString().split("T")[0];
-
       const match = data.find(d =>
-        d.day && d.day.startsWith(dateString)
+        new Date(d.day).getTime() === day.getTime()
       );
+
+      if (match) {
+        lastPulse = Number(match.pulse);
+        lastSpo2 = Number(match.spo2);
+      }
 
       labels.push(
         day.toLocaleDateString("de-DE", {
@@ -327,13 +331,8 @@ async function loadData() {
         })
       );
 
-      if (match) {
-        pulse.push(Number(match.pulse));
-        spo2.push(Number(match.spo2));
-      } else {
-        pulse.push(null);   
-        spo2.push(null);
-      }
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
     });
   }
 
