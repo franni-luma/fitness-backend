@@ -260,7 +260,7 @@ async function loadData() {
   let pulse = [];
   let spo2 = [];
 
-  // 🔵 24 Stunden Spezialbehandlung
+  // 24 Stunden 
   if (currentHours === 24) {
 
     const now = new Date();
@@ -273,17 +273,11 @@ async function loadData() {
       hours.push(d);
     }
 
-    let lastPulse = null;
-    let lastSpo2 = null;
-
     hours.forEach(h => {
 
-      const match = data.find(d => new Date(d.hour).getTime() === h.getTime());
-
-      if (match) {
-        lastPulse = Number(match.pulse);
-        lastSpo2 = Number(match.spo2);
-      }
+      const match = data.find(d => 
+        new Date(d.hour).getTime() === h.getTime()
+      );
 
       labels.push(
         h.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}) +
@@ -291,11 +285,12 @@ async function loadData() {
         h.getHours().toString().padStart(2,"0") + ":00"
       );
 
-      pulse.push(lastPulse);
-      spo2.push(lastSpo2);
+      // 🔥 WICHTIG: KEIN lastPulse mehr!
+      pulse.push(match ? Number(match.pulse) : null);
+      spo2.push(match ? Number(match.spo2) : null);
     });
+  }
 
-  } 
 
   else if (currentHours === 168) {
 
