@@ -38,7 +38,8 @@ app.get("/vitals", async (req, res) => {
   const range = req.query.range;
 
   try {
-
+    
+    // 24 Stunden 
     if (range === "24h") {
 
       const result = await pool.query(`
@@ -55,7 +56,26 @@ app.get("/vitals", async (req, res) => {
       return res.json(result.rows);
     }
 
-    // Standard 1h 
+    // 7 Tage 
+    if (range === "7d") {
+      const result = await pool.query(`
+        SELECT
+          DATE_TRUNC('day', time) +
+          CASE
+            WHEN EXTRACT(HOUR FROM time) < 12 THEN INTERVAL '0 hours'
+            ELSE INTERVAL '12 hours'
+          END AS halfday,
+          AVG(pulse) AS pulse,
+          AVG(spo2) AS spo2
+        FROM vitals
+        WHERE time >= NOW() - INTERVAL '7 days'
+        GROUP BY halfday
+        ORDER BY halfday ASC
+      `);
+      return res.json(result.rows);
+    }
+
+    // Standard 1h
     const result = await pool.query(`
       SELECT *
       FROM vitals
@@ -63,7 +83,7 @@ app.get("/vitals", async (req, res) => {
       LIMIT 200
     `);
 
-    res.json(result.rows);
+    return res.json(result.rows);
 
   } catch (err) {
     console.error(err);

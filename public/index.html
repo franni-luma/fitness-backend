@@ -201,7 +201,7 @@ let currentHours = 1;
 function setRange(hours) {
   currentHours = hours;
 
-  document.querySelectorAll(".button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("#vitalSection.button").forEach(b => b.classList.remove("active"));
   event.target.classList.add("active");
 
   loadData();
@@ -223,12 +223,33 @@ function switchTab(tab) {
   }
 }
 
+async function loadLiveValues() {
+  const res = await fetch("/vitals");
+  const data = await res.json();
+
+  if (data.length > 0) {
+    const latest = data[0];
+
+    document.getElementById("pulseValue").innerText = latest.pulse;
+    document.getElementById("spo2Value").innerText = latest.spo2;
+    document.getElementById("pulseTime").innerText =
+      new Date(latest.time).toLocaleTimeString("de-DE");
+    document.getElementById("spo2Time").innerText =
+      new Date(latest.time).toLocaleTimeString("de-DE");
+  }
+}
 
 async function loadData() {
-  const res = await fetch(currentHours === 24 ? "/vitals?range=24h" : "/vitals");
+  let url = "/vitals";
+
+  if (currentHours === 24) url = "/vitals?range=24h";
+  if (currentHours === 168) url = "/vitals?range=7d";
+
+  const res = await fetch(url);
+
   let data = await res.json();
 
-  if (currentHours !== 24) {
+  if (currentHours === 1) {
   const now = new Date();
   const cutoff = new Date(now - currentHours * 60 * 60 * 1000);
   data = data.filter(d => new Date(d.time) > cutoff);
@@ -241,20 +262,6 @@ async function loadData() {
 
   // 🔵 24 Stunden Spezialbehandlung
   if (currentHours === 24) {
-
-    // 🔹 Aktuelle Live-Werte separat laden
-    const liveRes = await fetch("/vitals");
-    const liveData = await liveRes.json();
-
-    if (liveData.length > 0) {
-      const latest = liveData[0];
-      document.getElementById("pulseValue").innerText = latest.pulse;
-      document.getElementById("spo2Value").innerText = latest.spo2;
-      document.getElementById("pulseTime").innerText =
-        new Date(latest.time).toLocaleTimeString("de-DE");
-      document.getElementById("spo2Time").innerText =
-        new Date(latest.time).toLocaleTimeString("de-DE");
-    }
 
     const now = new Date();
     const hours = [];
@@ -291,25 +298,78 @@ async function loadData() {
     });
 
   } 
+
+  else if (currentHours === 168) {
+
+    const now = new Date();
+    const days = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      d.setHours(0,0,0,0);
+      days.push(d);
+    }
+
+    let lastPulse = null;
+    let lastSpo2 = null;
+
+    days.forEach(day => {
+
+      const morning = new Date(day);
+      const noon = new Date(day);
+      noon.setHours(12);
+
+      const morningMatch = data.find(d =>
+        new Date(d.halfday).getTime() === morning.getTime()
+      );
+
+      const noonMatch = data.find(d =>
+        new Date(d.halfday).getTime() === noon.getTime()
+      );
+
+      // Morgen
+      if (morningMatch) {
+        lastPulse = Number(morningMatch.pulse);
+        lastSpo2 = Number(morningMatch.spo2);
+      }
+
+      labels.push(day.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit"
+        })
+      );
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
+
+      // Nachmittag
+      if (noonMatch) {
+        lastPulse = Number(noonMatch.pulse);
+        lastSpo2 = Number(noonMatch.spo2);
+      }
+
+      labels.push(day.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit"
+        })
+      );
+      pulse.push(lastPulse);
+      spo2.push(lastSpo2);
+
+    });
+  }
+
   else {
 
-    // 🔹 Normale 1h / 7 Tage Ansicht
+    // 🔹 Normale 1h 
     labels = data.map(d =>
       new Date(d.time).toLocaleTimeString("de-DE")
     );
 
     pulse = data.map(d => Number(d.pulse));
     spo2 = data.map(d => Number(d.spo2));
-
-    if (data.length > 0) {
-      const latest = data[data.length - 1];
-      document.getElementById("pulseValue").innerText = latest.pulse;
-      document.getElementById("spo2Value").innerText = latest.spo2;
-      document.getElementById("pulseTime").innerText =
-        new Date(latest.time).toLocaleTimeString("de-DE");
-      document.getElementById("spo2Time").innerText =
-        new Date(latest.time).toLocaleTimeString("de-DE");
-    }
   }
 
 
@@ -385,8 +445,14 @@ window.onload = function() {
   }
 };
 
+loadLiveValues();
 loadData();
-setInterval(loadData, 5000);
+
+setInterval(() => {
+  loadLiveValues();
+  loadData();
+}, 5000);
+
 </script>
 
 </body>
