@@ -366,29 +366,25 @@ async function loadData() {
         }]
       },
       options: {
-        onClick: (event) => {
-          const points = pulseChart.getElementsAtEventForMode(
-            event,
-            'nearest',
-            { intersect: false },
-            true
-          );
-
-          if (points.length) {
-
-            const index = points[0].index;
-
-            const clickedLabel = pulseChart.data.labels[index];
-            const clickedPulse = pulseChart.data.datasets[0].data[index];
-
-            alert(
-              "Zeit: " + clickedLabel +
-              "\nPuls: " + clickedPulse
-            );
-          }
+        interaction: {
+          mode: 'point',
+          intersect: true
         },
         plugins: {
-          legend: {display: false}
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              title: (context) => {return context[0].label;},
+              label: (context) => {return "Puls: " + context.raw + "bpm";},
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#70541',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: false
+          },
+          legend: { display: false }
         }
       }
     });
@@ -406,12 +402,15 @@ async function loadData() {
       },
       options: {
         interaction: {
-          mode: 'nearest',
-          intersect: false
+          mode: 'point',
+          intersect: true
         },
         plugins: {
           tooltip: {
             enabled: true,
+            callbacks: {
+              title: (context) => {return context[0].label;},
+              label: (context) => {return "SpO₂: " + context.raw + "%";},
             backgroundColor: 'rgba(0,0,0,0.8)',
             titleColor: '#fff',
             bodyColor: '#fff',
