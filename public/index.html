@@ -405,31 +405,22 @@ async function loadData() {
         }]
       },
       options: {
-        onClick: (event) => {
-          const points = spo2Chart.getElementsAtEventForMode(
-            event,
-            'nearest',
-            { intersect: false },
-            true
-          );
-
-          if (points.length) {
-
-            const index = points[0].index;
-
-            const clickedLabel = spo2Chart.data.labels[index];
-            const clickedSpo2 = spo2Chart.data.datasets[0].data[index];
-
-            alert(
-              "Zeit: " + clickedLabel +
-              "\nSpo2: " + clickedSpo2
-            );
-          }
+        interaction: {
+          mode: 'nearest',
+          intersect: false
         },
         plugins: {
-          legend: {
-            display: false
-          }
+          tooltip: {
+            enabled: true,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#3cc6ff',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: false
+          },
+          legend: { display: false }
         }
       }
     });
