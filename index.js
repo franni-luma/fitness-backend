@@ -44,13 +44,18 @@ app.get("/vitals", async (req, res) => {
 
       const result = await pool.query(`
         SELECT
-          DATE_TRUNC('hour', time AT TIME ZONE 'Europe/Berlin') + INTERVAL '1 hour' AS hour,
+          TO_CHAR(DATE_TRUNC('hour', time AT TIME ZONE 'Europe/Berlin') + INTERVAL '1 hour',
+            'YYYY-MM-DD HH24:00') AS hour,
           AVG(pulse) AS pulse,
           AVG(spo2) AS spo2
         FROM vitals
-        WHERE time >= (NOW() AT TIME ZONE 'Europe/Berlin') - INTERVAL '24 hours'
+        WHERE time >= (
+          DATE_TRUNC('hour', NOW() AT TIME ZONE 'Europe/Berlin')
+          - INTERVAL '24 hours'
+        )
+        AND time < DATE_TRUNC('hour', NOW() AT TIME ZONE 'Europe/Berlin')
         GROUP BY hour
-        ORDER BY hour ASC
+        ORDER BY hour
       `);
 
       return res.json(result.rows);
