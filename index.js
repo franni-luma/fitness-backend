@@ -49,10 +49,7 @@ app.get("/vitals", async (req, res) => {
           AVG(pulse) AS pulse,
           AVG(spo2) AS spo2
         FROM vitals
-        WHERE time >= (
-          DATE_TRUNC('hour', NOW() AT TIME ZONE 'Europe/Berlin')
-          - INTERVAL '24 hours'
-        )
+        WHERE time >= DATE_TRUNC('hour', NOW()) - INTERVAL '24 hours'
         AND time < DATE_TRUNC('hour', NOW() AT TIME ZONE 'Europe/Berlin')
         GROUP BY hour
         ORDER BY hour
