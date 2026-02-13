@@ -272,14 +272,16 @@ async function loadData() {
   if (currentHours === 24) {
 
     const now = new Date();
+    now.setMinutes(0,0,0); // ganz wichtig!
+
     const hours = [];
 
-    for (let i = 24; i >= 0; i--) {
+    for (let i = 24; i > 0; i--) {
       const d = new Date(now);
       d.setHours(now.getHours() - i);
-      d.setMinutes(0,0,0);
       hours.push(d);
     }
+
 
     hours.forEach(h => {
 
