@@ -91,34 +91,6 @@ app.get("/vitals", async (req, res) => {
   }
 });
 
-app.get("/vitals-debug-24h", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT
-        TO_CHAR(DATE_TRUNC('hour', time AT TIME ZONE 'Europe/Berlin') + INTERVAL '1 hour',
-          'YYYY-MM-DD HH24:00') AS hour,
-        ARRAY_AGG(
-          json_build_object(
-            'time', time AT TIME ZONE 'Europe/Berlin',
-            'pulse', pulse,
-            'spo2', spo2
-          )
-          ORDER BY time
-        ) AS values,
-        AVG(pulse) AS pulse_avg,
-        AVG(spo2) AS spo2_avg
-      FROM vitals
-      WHERE time >= DATE_TRUNC('hour', NOW()) - INTERVAL '24 hours'
-      GROUP BY hour
-      ORDER BY hour;
-    `);
-
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Database error");
-  }
-});
 
 
 
