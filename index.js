@@ -44,7 +44,7 @@ app.get("/vitals", async (req, res) => {
 
       const result = await pool.query(`
         SELECT
-          DATE_TRUNC('hour', time) + INTERVAL '1 hour' AS hour,
+          DATE_TRUNC('hour', time AT TIME ZONE 'Europe/Berlin') AS hour,
           AVG(pulse) AS pulse,
           AVG(spo2) AS spo2
         FROM vitals
