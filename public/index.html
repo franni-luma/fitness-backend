@@ -366,10 +366,17 @@ async function loadData() {
         }]
       },
       options: {
-        onClick: (event, elements) => {
-          if (elements.length > 0) {
+        onClick: (event) => {
+          const points = pulseChart.getElementsAtEventForMode(
+            event,
+            'nearest',
+            { intersect: false },
+            true
+          );
 
-            const index = elements[0].index;
+          if (points.length) {
+
+            const index = points[0].index;
 
             const clickedLabel = pulseChart.data.labels[index];
             const clickedPulse = pulseChart.data.datasets[0].data[index];
@@ -398,17 +405,24 @@ async function loadData() {
         }]
       },
       options: {
-        onClick: (event, elements) => {
-          if (elements.length > 0) {
+        onClick: (event) => {
+          const points = spo2Chart.getElementsAtEventForMode(
+            event,
+            'nearest',
+            { intersect: false },
+            true
+          );
 
-            const index = elements[0].index;
+          if (points.length) {
+
+            const index = points[0].index;
 
             const clickedLabel = spo2Chart.data.labels[index];
             const clickedSpo2 = spo2Chart.data.datasets[0].data[index];
 
             alert(
               "Zeit: " + clickedLabel +
-              "\nSpO₂: " + clickedSpo2
+              "\nSpo2: " + clickedSpo2
             );
           }
         },
