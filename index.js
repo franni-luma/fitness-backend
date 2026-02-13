@@ -93,8 +93,8 @@ app.get("/vitals-debug-24h", async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
-        DATE_TRUNC('hour', time AT TIME ZONE 'Europe/Berlin')
-          + INTERVAL '1 hour' AS hour,
+        TO_CHAR(DATE_TRUNC('hour', time AT TIME ZONE 'Europe/Berlin') + INTERVAL '1 hour',
+          'YYYY-MM-DD HH24:00') AS hour,
         ARRAY_AGG(
           json_build_object(
             'time', time AT TIME ZONE 'Europe/Berlin',
