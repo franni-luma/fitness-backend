@@ -305,9 +305,6 @@ async function loadData() {
       days.push(d);
     }
 
-    let lastPulse = null;
-    let lastSpo2 = null;
-
     days.forEach(day => {
 
       const match = data.find(d => {
@@ -329,8 +326,8 @@ async function loadData() {
         })
       );
 
-      pulse.push(lastPulse);
-      spo2.push(lastSpo2);
+      pulse.push(match ? Number(match.pulse) : null);
+      spo2.push(match ? Number(match.spo2) : null);
     });
   }
 
