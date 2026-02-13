@@ -270,7 +270,7 @@ async function loadData() {
   if (currentHours === 24) {
 
     const now = new Date();
-    now.setMinutes(0,0,0); // ganz wichtig!
+    now.setMinutes(0,0,0);
 
     const hours = [];
 
@@ -307,7 +307,7 @@ async function loadData() {
     const now = new Date();
     const days = [];
 
-    // 🔹 Immer 7 feste Kalendertage erzeugen
+    // 7 Tage
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
@@ -342,8 +342,7 @@ async function loadData() {
   }
 
   else {
-
-    // 🔹 Normale 1h 
+    // 1h
     labels = data.map(d =>
       new Date(d.time).toLocaleTimeString("de-DE")
     );
@@ -351,7 +350,6 @@ async function loadData() {
     pulse = data.map(d => Number(d.pulse));
     spo2 = data.map(d => Number(d.spo2));
   }
-
 
   if (!pulseChart) {
     pulseChart = new Chart(document.getElementById("pulseChart"), {
@@ -362,7 +360,10 @@ async function loadData() {
           data: pulse,
           borderColor: "#ff4d7a",
           tension: 0.4,
-          spanGaps: true
+          spanGaps: true,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          pointHitRadius: 15   
         }]
       },
       options: {
