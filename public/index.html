@@ -276,7 +276,7 @@ async function loadData() {
 
     const hours = [];
 
-    for (let i = 24; i >= 0; i--) {
+    for (let i = 24; i >= -1; i--) {
       const d = new Date(now);
       d.setHours(now.getHours() - i);
       hours.push(d);
