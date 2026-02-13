@@ -106,7 +106,7 @@ app.get("/vitals-debug-24h", async (req, res) => {
         AVG(pulse) AS pulse_avg,
         AVG(spo2) AS spo2_avg
       FROM vitals
-      WHERE time >= NOW() - INTERVAL '24 hours'
+      WHERE time >= DATE_TRUNC('hour', NOW()) - INTERVAL '24 hours'
       GROUP BY hour
       ORDER BY hour;
     `);
