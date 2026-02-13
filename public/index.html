@@ -138,6 +138,8 @@ canvas {
     <canvas id="pulseChart"></canvas>
   </div>
 
+  <div id="debug24h" style="margin-top:20px; font-size:14px;"></div>
+
   <div class="card">
     <h3>SpO₂-Verlauf</h3>
     <canvas id="spo2Chart"></canvas>
@@ -245,6 +247,12 @@ async function loadData() {
   if (currentHours === 24) url = "/vitals?range=24h";
   if (currentHours === 168) url = "/vitals?range=7d";
 
+  if (currentHours !== 24) {
+    const dbg = document.getElementById("debug24h");
+    if (dbg) dbg.innerHTML = "";
+  }
+
+
   const res = await fetch(url);
 
   let data = await res.json();
@@ -304,6 +312,23 @@ async function loadData() {
       pulse.push(match ? Number(match.pulse) : null);
       spo2.push(match ? Number(match.spo2) : null);
     });
+
+    // 🔎 DEBUG TABELLE NUR FÜR 24H
+    let html = "<table style='width:100%;color:white;border-collapse:collapse'>";
+    html += "<tr><th>Zeit</th><th>Puls</th><th>SpO2</th></tr>";
+
+    labels.forEach((label, i) => {
+      html += `<tr>
+        <td>${label}</td>
+        <td>${pulse[i]}</td>
+        <td>${spo2[i]}</td>
+      </tr>`;
+    });
+
+    html += "</table>";
+
+    document.getElementById("debug24h").innerHTML = html;
+
   }
 
 
