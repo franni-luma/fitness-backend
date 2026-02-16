@@ -376,7 +376,7 @@ async function loadData() {
             enabled: true,
             callbacks: {
               title: (context) => {return context[0].label;},
-              label: (context) => {return "Puls: " + context.raw + "bpm";}},
+              label: (context) => {return "Puls: " + Number(context.raw).toFixed(2) + " bpm";}},
             backgroundColor: 'rgba(0,0,0,0.8)',
             titleColor: '#fff',
             bodyColor: '#fff',
@@ -414,7 +414,7 @@ async function loadData() {
             enabled: true,
             callbacks: {
               title: (context) => {return context[0].label;},
-              label: (context) => {return "SpO₂: " + context.raw + "%";}},
+              label: (context) => {return "SpO₂: " + Number(context.raw).toFixed(2) + " %";}},
             backgroundColor: 'rgba(0,0,0,0.8)',
             titleColor: '#fff',
             bodyColor: '#fff',
