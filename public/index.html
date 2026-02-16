@@ -179,6 +179,11 @@ canvas {
     </div>
   </div>
 
+  <div id="trainingTimer" class="value" style="margin-top:10px;">
+    00:00:00
+  </div>
+
+
   <div class="card">
     <h3>Zeit in den Herzfrequenzzonen:</h3>
     <div id="zoneTimes">
@@ -201,8 +206,11 @@ canvas {
     </ul>
   </div>
 
-</div>
+  <div id="debugPulse" class="small" style="margin-top:10px; color:#4dd2ff;">
+  </div>
 
+
+</div>
 
 <script>
 let pulseChart;
@@ -218,6 +226,9 @@ let zoneCounters = {
   extreme: 0
 };
 let lastMeasurementTime = null;
+let trainingStartTime = null;
+let timerInterval = null;
+
 
 function setRange(hours, el) {
   currentHours = hours;
@@ -486,16 +497,20 @@ window.onload = function() {
 };
 
 function toggleTraining() {
-  const btn = document.getElementById("trainingBtn");
+  const age = parseInt(document.getElementById("ageInput").value);
+  if (!age) {
+    alert("Bitte zuerst Alter eingeben.");
+    return;
+  }
 
+  const btn = document.getElementById("trainingBtn");
   trainingActive = !trainingActive;
 
   if (trainingActive) {
     btn.innerText = "Training stoppen";
     btn.classList.add("active");
     document.getElementById("trainingStatus").innerText = "Training läuft...";
-    
-    // Zähler zurücksetzen
+
     zoneCounters = {
       health: 0,
       fat: 0,
@@ -503,15 +518,23 @@ function toggleTraining() {
       anaerobic: 0,
       extreme: 0
     };
+
+    trainingStartTime = Date.now();
     lastMeasurementTime = Date.now();
+
+    startTimer();
+
   } else {
     btn.innerText = "Training starten";
     btn.classList.remove("active");
     document.getElementById("trainingStatus").innerText = "Training beendet";
+
+    clearInterval(timerInterval);
   }
 }
 
 function calculateZone(currentPulse) {
+  document.getElementById("debugPulse").innerText = `Letzter Puls: ${currentPulse} bpm`;
 
   const age = parseInt(document.getElementById("ageInput").value);
   if (!age) return;
@@ -526,19 +549,36 @@ function calculateZone(currentPulse) {
 
   lastMeasurementTime = now;
 
+  let zoneName = "";
+
   if (percent >= 90) {
     zoneCounters.extreme += diffSeconds;
-  } else if (percent >= 80) {
+    zoneName = "Extrem";
+  } 
+  else if (percent >= 80) {
     zoneCounters.anaerobic += diffSeconds;
-  } else if (percent >= 70) {
+    zoneName = "Anaerob";
+  } 
+  else if (percent >= 70) {
     zoneCounters.aerobic += diffSeconds;
-  } else if (percent >= 60) {
+    zoneName = "Aerob";
+  } 
+  else if (percent >= 60) {
     zoneCounters.fat += diffSeconds;
-  } else if (percent >= 50) {
+    zoneName = "Fettverbrennung";
+  } 
+  else if (percent >= 50) {
     zoneCounters.health += diffSeconds;
+    zoneName = "Gesundheitszone";
+  } 
+  else {
+    zoneName = "Unter 50%";
   }
 
   updateZoneDisplay();
+
+  document.getElementById("trainingStatus").innerText = `Training läuft... Aktuelle Zone: ${zoneName}`;
+
 }
 
 function updateZoneDisplay() {
@@ -554,6 +594,22 @@ function updateZoneDisplay() {
     Fettverbrennung: ${toMinutes(zoneCounters.fat)} Min<br>
     Gesundheitszone: ${toMinutes(zoneCounters.health)} Min
   `;
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+
+    const now = Date.now();
+    const diff = Math.floor((now - trainingStartTime) / 1000);
+
+    const hours = String(Math.floor(diff / 3600)).padStart(2,"0");
+    const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2,"0");
+    const seconds = String(diff % 60).padStart(2,"0");
+
+    document.getElementById("trainingTimer").innerText =
+      `${hours}:${minutes}:${seconds}`;
+
+  }, 1000);
 }
 
 
