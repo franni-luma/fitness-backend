@@ -95,139 +95,138 @@ canvas {
 
 <div class="container">
 
-<h1>Hallo Franziska & Lukas 👋</h1>
-
-<div class="card">
-  <div class="buttons">
-    <div class="button active" onclick="switchTab('vital')" id="tabVital">
-      Vitaldaten
-    </div>
-    <div class="button" onclick="switchTab('zones')" id="tabZones">
-      Pulsbereiche
-    </div>
-  </div>
-</div>
-
-<div id="vitalSection">
-  <div class="card flex">
-    <div class="stat">
-      <div>Puls</div>
-      <h2 id="pulseValue">--</h2>
-      <div id="pulseTime"></div>
-      <div class="small">bpm</div>
-    </div>
-
-    <div class="stat">
-      <div>SpO₂</div>
-      <h2 id="spo2Value">--</h2>
-      <div id="spo2Time"></div>
-      <div class="small">%</div>
-    </div>
-  </div>
+  <h1>Hallo Franziska & Lukas 👋</h1>
 
   <div class="card">
     <div class="buttons">
-      <div class="button active" onclick="setRange(1, this)">1 Stunde</div>
-      <div class="button" onclick="setRange(24, this)">24 Stunden</div>
-      <div class="button" onclick="setRange(168, this)">7 Tage</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Pulsverlauf</h3>
-    <canvas id="pulseChart"></canvas>
-  </div>
-
-  <div class="card">
-    <h3>SpO₂-Verlauf</h3>
-    <canvas id="spo2Chart"></canvas>
-  </div>
-
-  </div>
-</div>
-
-<div id="zoneSection" style="display:none;">
-
-  <div class="card flex">
-    <div class="stat">
-      <div>Puls</div>
-      <h2 id="pulseValue">--</h2>
-      <div id="pulseTime"></div>
-      <div class="small">bpm</div>
-    </div>
-
-    <div class="stat">
-      <div>SpO₂</div>
-      <h2 id="spo2Value">--</h2>
-      <div id="spo2Time"></div>
-      <div class="small">%</div>
-    </div>
-  </div>
-
-  <div class="card flex">
-    <div class="stat">
-      <div>Alter</div>
-      <input 
-        type="number" 
-        id="ageInput" 
-        min="1" 
-        max="120" 
-        placeholder="Alter eingeben"
-        oninput="updateMaxPulse()"
-        style="width:80px; padding:8px; border-radius:10px; border:none; text-align:center; font-size:18px;"
-      >
-    </div>
-
-    <div class="stat">
-      <div>Maximalpuls</div>
-      <h2 id="maxPulse">-- bpm</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="buttons">
-      <div class="button" onclick="toggleTraining()" id="trainingBtn">
-        Training starten
+      <div class="button active" onclick="switchTab('vital')" id="tabVital">
+        Vitaldaten
+      </div>
+      <div class="button" onclick="switchTab('zones')" id="tabZones">
+        Pulsbereiche
       </div>
     </div>
-    <div id="trainingStatus" class="small" style="margin-top:10px;">
-      Kein Training aktiv
+  </div>
+
+  <div id="vitalSection">
+    <div class="card flex">
+      <div class="stat">
+        <div>Puls</div>
+        <h2 id="pulseValue">--</h2>
+        <div id="pulseTime"></div>
+        <div class="small">bpm</div>
+      </div>
+
+      <div class="stat">
+        <div>SpO₂</div>
+        <h2 id="spo2Value">--</h2>
+        <div id="spo2Time"></div>
+        <div class="small">%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="buttons">
+        <div class="button active" onclick="setRange(1, this)">1 Stunde</div>
+        <div class="button" onclick="setRange(24, this)">24 Stunden</div>
+        <div class="button" onclick="setRange(168, this)">7 Tage</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Pulsverlauf</h3>
+      <canvas id="pulseChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>SpO₂-Verlauf</h3>
+      <canvas id="spo2Chart"></canvas>
+    </div>
+
+  </div>
+
+
+  <div id="zoneSection" style="display:none;">
+
+    <div class="card flex">
+      <div class="stat">
+        <div>Puls</div>
+        <h2 id="zonepulseValue">--</h2>
+        <div id="zonepulseTime"></div>
+        <div class="small">bpm</div>
+      </div>
+
+      <div class="stat">
+        <div>SpO₂</div>
+        <h2 id="zonespo2Value">--</h2>
+        <div id="zonespo2Time"></div>
+        <div class="small">%</div>
+      </div>
+    </div>
+
+    <div class="card flex">
+      <div class="stat">
+        <div>Alter</div>
+        <input 
+          type="number" 
+          id="ageInput" 
+          min="1" 
+          max="120" 
+          placeholder="Alter eingeben"
+          oninput="updateMaxPulse()"
+          style="width:80px; padding:8px; border-radius:10px; border:none; text-align:center; font-size:18px;"
+        >
+      </div>
+
+      <div class="stat">
+        <div>Maximalpuls</div>
+        <h2 id="maxPulse">-- bpm</h2>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="buttons">
+        <div class="button" onclick="toggleTraining()" id="trainingBtn">
+          Training starten
+        </div>
+      </div>
+      <div id="trainingStatus" class="small" style="margin-top:10px;">
+        Kein Training aktiv
+      </div>
+    </div>
+
+    <div id="trainingTimer" class="value" style="margin-top:10px;">
+      00:00:00
+    </div>
+
+
+    <div class="card">
+      <h3>Zeit in den Herzfrequenzzonen:</h3>
+      <div id="zoneTimes">
+        Extrem: <br>
+        Anaerob: <br>
+        Aerob: <br>
+        Fettverbrennung: <br>
+        Gesundheitszone:
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Erklärung der Herzfrequenzzonen:</h3>
+      <ul>
+        <li><span class="value">50–60%</span> Gesundheitszone: Förderung der Gesundheit</li>
+        <li><span class="value">60–70%</span> Fettverbrennung: Aktivierung es Fettstoffwechsels/ Verbesserung der Grundlagenausdauer</li>
+        <li><span class="value">70–80%</span> Aerob: Steigerung der Ausdauerleistungsfähigkeit</li>
+        <li><span class="value">80–90%</span> Anaerob: Verbessung der Laktattoleranz/ Training für maximalen Leistungszuwachs</li>
+        <li><span class="value">90–100%</span> Extrem: Verbesserung der maximale Leistung und Geschwindigkeit</li>
+      </ul>
+    </div>
+
+    <div id="debugPulse" class="small" style="margin-top:10px; color:#4dd2ff;">
     </div>
   </div>
-
-  <div id="trainingTimer" class="value" style="margin-top:10px;">
-    00:00:00
-  </div>
-
-
-  <div class="card">
-    <h3>Zeit in den Herzfrequenzzonen:</h3>
-    <div id="zoneTimes">
-      Extrem: <br>
-      Anaerob: <br>
-      Aerob: <br>
-      Fettverbrennung: <br>
-      Gesundheitszone:
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Erklärung der Herzfrequenzzonen:</h3>
-    <ul>
-      <li><span class="value">50–60%</span> Gesundheitszone: Förderung der Gesundheit</li>
-      <li><span class="value">60–70%</span> Fettverbrennung: Aktivierung es Fettstoffwechsels/ Verbesserung der Grundlagenausdauer</li>
-      <li><span class="value">70–80%</span> Aerob: Steigerung der Ausdauerleistungsfähigkeit</li>
-      <li><span class="value">80–90%</span> Anaerob: Verbessung der Laktattoleranz/ Training für maximalen Leistungszuwachs</li>
-      <li><span class="value">90–100%</span> Extrem: Verbesserung der maximale Leistung und Geschwindigkeit</li>
-    </ul>
-  </div>
-
-  <div id="debugPulse" class="small" style="margin-top:10px; color:#4dd2ff;">
-  </div>
-
 
 </div>
-
 <script>
 let pulseChart;
 let spo2Chart;
@@ -278,12 +277,19 @@ async function loadLiveValues() {
   if (data.length > 0) {
     const latest = data[0];
 
+    const time = new Date(latest.time).toLocaleTimeString("de-DE");
+
+    // Vital-Tab
     document.getElementById("pulseValue").innerText = latest.pulse;
     document.getElementById("spo2Value").innerText = latest.spo2;
-    document.getElementById("pulseTime").innerText =
-      new Date(latest.time).toLocaleTimeString("de-DE");
-    document.getElementById("spo2Time").innerText =
-      new Date(latest.time).toLocaleTimeString("de-DE");
+    document.getElementById("pulseTime").innerText = time;
+    document.getElementById("spo2Time").innerText = time;
+
+    // Zonen-Tab
+    document.getElementById("zonePulseValue").innerText = latest.pulse;
+    document.getElementById("zoneSpo2Value").innerText = latest.spo2;
+    document.getElementById("zonePulseTime").innerText = time;
+    document.getElementById("zoneSpo2Time").innerText = time;
 
     if (trainingActive) {
       calculateZone(latest.pulse);
