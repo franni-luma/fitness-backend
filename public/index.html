@@ -169,13 +169,24 @@ canvas {
   </div>
 
   <div class="card">
+    <div class="buttons">
+      <div class="button" onclick="toggleTraining()" id="trainingBtn">
+        Training starten
+      </div>
+    </div>
+    <div id="trainingStatus" class="small" style="margin-top:10px;">
+      Kein Training aktiv
+    </div>
+  </div>
+
+  <div class="card">
     <h3>Zeit in den Herzfrequenzzonen:</h3>
     <div id="zoneTimes">
-      Extrem: 0 Min<br>
-      Anaerob: 0 Min<br>
-      Aerob: 0 Min<br>
-      Fettverbrennung: 0 Min<br>
-      Gesundheitszone: 0 Min
+      Extrem: <br>
+      Anaerob: <br>
+      Aerob: <br>
+      Fettverbrennung: <br>
+      Gesundheitszone:
     </div>
   </div>
 
@@ -198,6 +209,16 @@ let pulseChart;
 let spo2Chart;
 let currentHours = 1;
 
+let trainingActive = false;
+let zoneCounters = {
+  health: 0,
+  fat: 0,
+  aerobic: 0,
+  anaerobic: 0,
+  extreme: 0
+};
+let lastMeasurementTime = null;
+
 function setRange(hours, el) {
   currentHours = hours;
 
@@ -206,7 +227,6 @@ function setRange(hours, el) {
 
   loadData();
 }
-
 
 function switchTab(tab) {
 
@@ -237,6 +257,10 @@ async function loadLiveValues() {
       new Date(latest.time).toLocaleTimeString("de-DE");
     document.getElementById("spo2Time").innerText =
       new Date(latest.time).toLocaleTimeString("de-DE");
+
+    if (trainingActive) {
+      calculateZone(latest.pulse);
+    }
   }
 }
 
@@ -460,6 +484,78 @@ window.onload = function() {
     updateMaxPulse();
   }
 };
+
+function toggleTraining() {
+  const btn = document.getElementById("trainingBtn");
+
+  trainingActive = !trainingActive;
+
+  if (trainingActive) {
+    btn.innerText = "Training stoppen";
+    btn.classList.add("active");
+    document.getElementById("trainingStatus").innerText = "Training läuft...";
+    
+    // Zähler zurücksetzen
+    zoneCounters = {
+      health: 0,
+      fat: 0,
+      aerobic: 0,
+      anaerobic: 0,
+      extreme: 0
+    };
+    lastMeasurementTime = Date.now();
+  } else {
+    btn.innerText = "Training starten";
+    btn.classList.remove("active");
+    document.getElementById("trainingStatus").innerText = "Training beendet";
+  }
+}
+
+function calculateZone(currentPulse) {
+
+  const age = parseInt(document.getElementById("ageInput").value);
+  if (!age) return;
+
+  const maxPulse = 220 - age;
+  const percent = (currentPulse / maxPulse) * 100;
+
+  const now = Date.now();
+  const diffSeconds = lastMeasurementTime 
+      ? (now - lastMeasurementTime) / 1000 
+      : 0;
+
+  lastMeasurementTime = now;
+
+  if (percent >= 90) {
+    zoneCounters.extreme += diffSeconds;
+  } else if (percent >= 80) {
+    zoneCounters.anaerobic += diffSeconds;
+  } else if (percent >= 70) {
+    zoneCounters.aerobic += diffSeconds;
+  } else if (percent >= 60) {
+    zoneCounters.fat += diffSeconds;
+  } else if (percent >= 50) {
+    zoneCounters.health += diffSeconds;
+  }
+
+  updateZoneDisplay();
+}
+
+function updateZoneDisplay() {
+
+  function toMinutes(seconds) {
+    return Math.floor(seconds / 60);
+  }
+
+  document.getElementById("zoneTimes").innerHTML = `
+    Extrem: ${toMinutes(zoneCounters.extreme)} Min<br>
+    Anaerob: ${toMinutes(zoneCounters.anaerobic)} Min<br>
+    Aerob: ${toMinutes(zoneCounters.aerobic)} Min<br>
+    Fettverbrennung: ${toMinutes(zoneCounters.fat)} Min<br>
+    Gesundheitszone: ${toMinutes(zoneCounters.health)} Min
+  `;
+}
+
 
 loadLiveValues();
 loadData();
