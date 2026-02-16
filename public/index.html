@@ -398,13 +398,16 @@ async function loadData() {
           data: spo2,
           borderColor: "#3cc6ff",
           tension: 0.4,
-          spanGaps: true
+          spanGaps: true,
+          pointRadius: 3,
+          pointHoverRadius: 2,
+          pointHitRadius: 2
         }]
       },
       options: {
         interaction: {
-          mode: 'point',
-          intersect: true
+          mode: 'nearest',
+          intersect: false
         },
         plugins: {
           tooltip: {
