@@ -363,13 +363,13 @@ async function loadData() {
           spanGaps: true,
           pointRadius: 3,
           pointHoverRadius: 6,
-          pointHitRadius: 15   
+          pointHitRadius: 8  
         }]
       },
       options: {
         interaction: {
-          mode: 'point',
-          intersect: true
+          mode: 'nearest',
+          intersect: false
         },
         plugins: {
           tooltip: {
