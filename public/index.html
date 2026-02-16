@@ -151,15 +151,15 @@ canvas {
     <div class="card flex">
       <div class="stat">
         <div>Puls</div>
-        <h2 id="zonepulseValue">--</h2>
-        <div id="zonepulseTime"></div>
+        <h2 id="zonepulsevalue">--</h2>
+        <div id="zonepulsetime"></div>
         <div class="small">bpm</div>
       </div>
 
       <div class="stat">
         <div>SpO₂</div>
-        <h2 id="zonespo2Value">--</h2>
-        <div id="zonespo2Time"></div>
+        <h2 id="zonespo2value">--</h2>
+        <div id="zonespo2time"></div>
         <div class="small">%</div>
       </div>
     </div>
@@ -286,10 +286,10 @@ async function loadLiveValues() {
     document.getElementById("spo2Time").innerText = time;
 
     // Zonen-Tab
-    document.getElementById("zonePulseValue").innerText = latest.pulse;
-    document.getElementById("zoneSpo2Value").innerText = latest.spo2;
-    document.getElementById("zonePulseTime").innerText = time;
-    document.getElementById("zoneSpo2Time").innerText = time;
+    document.getElementById("zonepulsevalue").innerText = latest.pulse;
+    document.getElementById("zonespo2value").innerText = latest.spo2;
+    document.getElementById("zonepulsetime").innerText = time;
+    document.getElementById("zonespo2time").innerText = time;
 
     if (trainingActive) {
       calculateZone(latest.pulse);
