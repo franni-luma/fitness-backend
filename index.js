@@ -19,9 +19,11 @@ app.post("/vitals", async (req, res) => {
   const { pulse, spo2, timestamp } = req.body;
 
   try {
-    await pool.query(
-      "INSERT INTO vitals(pulse, spo2) VALUES($1,$2)",
-      [pulse, spo2]
+    await pool.query(`
+      INSERT INTO vitals (pulse, spo2, time)
+      VALUES ($1,$2,COALESCE(to_timestamp($3), NOW()))
+      `,
+      [pulse,spo2,timestamp && Number(timestamp) > 0 ? Number(timestamp) : null]
     );
     res.status(200).send("OK");
   } catch (err) {
