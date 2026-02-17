@@ -88,6 +88,28 @@ canvas {
   margin-top:10px; 
 }
 
+.zoneLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.zoneLeft {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.zoneRight {
+  width: 220px;
+}
+
+.zoneRight canvas {
+  width: 220px !important;
+  height: 220px !important;
+}
+
 </style>
 </head>
 
@@ -199,21 +221,19 @@ canvas {
     </div>
 
 
-    <div class="card">
-      <h3>Zeit in den Herzfrequenzzonen:</h3>
-      <div id="zoneTimes">
-        Extrem: <br>
-        Anaerob: <br>
-        Aerob: <br>
-        Fettverbrennung: <br>
-        Gesundheitszone:
+    <div class="card zoneLayout">
+
+      <div class="zoneLeft">
+        <h3>Zeit in den Herzfrequenzzonen</h3>
+        <div id="zoneTimes"></div>
       </div>
+
+      <div class="zoneRight">
+        <canvas id="zoneChart"></canvas>
+      </div>
+
     </div>
 
-    <div class="card">
-      <h3>Verteilung der Herzfrequenzzonen</h3>
-      <canvas id="zoneChart"></canvas>
-    </div>
 
     <div class="card">
       <h3>Erklärung der Herzfrequenzzonen:</h3>
@@ -567,13 +587,10 @@ function toggleTraining() {
           }]
         },
         options: {
-          cutout: "65%",
+          cutout: "70%",
           plugins: {
             legend: {
-              position: "bottom",
-              labels: { color: "white",
-              padding: 15
-            }
+              display: false
             }
           }
         }
@@ -646,11 +663,11 @@ function updateZoneDisplay() {
   }
 
   document.getElementById("zoneTimes").innerHTML = `
-    Extrem: ${formatTime(zoneCounters.extreme)}<br>
-    Anaerob: ${formatTime(zoneCounters.anaerobic)}<br>
-    Aerob: ${formatTime(zoneCounters.aerobic)}<br>
-    Fettverbrennung: ${formatTime(zoneCounters.fat)}<br>
-    Gesundheitszone: ${formatTime(zoneCounters.health)}
+    <div style="color:#ff0000">● Extrem: ${formatTime(zoneCounters.extreme)}</div>
+    <div style="color:#ff8800">● Anaerob: ${formatTime(zoneCounters.anaerobic)}</div>
+    <div style="color:#00cc66">● Aerob: ${formatTime(zoneCounters.aerobic)}</div>
+    <div style="color:#3cc6ff">● Fett: ${formatTime(zoneCounters.fat)}</div>
+    <div style="color:#8888ff">● Gesundheit: ${formatTime(zoneCounters.health)}</div>
   `;
 
   if (zoneChart) {
