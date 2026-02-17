@@ -185,6 +185,9 @@ canvas {
     </div>
 
     <div class="card">
+      <div id="trainingTimer" class="value" style="text-align:center; margin-bottom:15px;">
+        00:00:00
+      </div>
       <div class="buttons">
         <div class="button" onclick="toggleTraining()" id="trainingBtn">
           Training starten
@@ -193,10 +196,6 @@ canvas {
       <div id="trainingStatus" class="small" style="margin-top:10px;">
         Kein Training aktiv
       </div>
-    </div>
-
-    <div id="trainingTimer" class="value" style="margin-top:10px;">
-      00:00:00
     </div>
 
 
@@ -220,9 +219,6 @@ canvas {
         <li><span class="value">80–90%</span> Anaerob: Verbessung der Laktattoleranz/ Training für maximalen Leistungszuwachs</li>
         <li><span class="value">90–100%</span> Extrem: Verbesserung der maximale Leistung und Geschwindigkeit</li>
       </ul>
-    </div>
-
-    <div id="debugPulse" class="small" style="margin-top:10px; color:#4dd2ff;">
     </div>
   </div>
 
@@ -556,7 +552,6 @@ function toggleTraining() {
 }
 
 function calculateZone(currentPulse) {
-  document.getElementById("debugPulse").innerText = `Letzter Puls: ${currentPulse} bpm`;
 
   const age = parseInt(document.getElementById("ageInput").value);
   if (!age) return;
