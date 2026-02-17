@@ -261,11 +261,10 @@ let zoneCounters = {
   anaerobic: 0,
   extreme: 0
 };
-let lastMeasurementTime = null;
 let trainingStartTime = null;
 let timerInterval = null;
 let zoneChart;
-
+let lastPulseValue = null;
 
 function setRange(hours, el) {
   currentHours = hours;
@@ -298,7 +297,7 @@ async function loadLiveValues() {
 
   if (data.length > 0) {
     const latest = data[0];
-
+    lastPulseValue = latest.pulse;
     const time = new Date(latest.time).toLocaleTimeString("de-DE");
 
     // Vital-Tab
@@ -313,9 +312,6 @@ async function loadLiveValues() {
     document.getElementById("zonepulsetime").innerText = time;
     document.getElementById("zonespo2time").innerText = time;
 
-    if (trainingActive) {
-      calculateZone(latest.pulse);
-    }
   }
 }
 
@@ -564,7 +560,6 @@ function toggleTraining() {
     };
 
     trainingStartTime = Date.now();
-    lastMeasurementTime = Date.now();
     document.getElementById("trainingTimer").innerText = "00:00:00";
 
     startTimer();
@@ -614,33 +609,26 @@ function calculateZone(currentPulse) {
   const maxPulse = 220 - age;
   const percent = (currentPulse / maxPulse) * 100;
 
-  const now = Date.now();
-  const diffSeconds = lastMeasurementTime 
-      ? (now - lastMeasurementTime) / 1000 
-      : 0;
-
-  lastMeasurementTime = now;
-
   let zoneName = "";
 
   if (percent >= 90) {
-    zoneCounters.extreme += diffSeconds;
+    zoneCounters.extreme += 1;
     zoneName = "Extrem";
   } 
   else if (percent >= 80) {
-    zoneCounters.anaerobic += diffSeconds;
+    zoneCounters.anaerobic += 1;
     zoneName = "Anaerob";
   } 
   else if (percent >= 70) {
-    zoneCounters.aerobic += diffSeconds;
+    zoneCounters.aerobic += 1;
     zoneName = "Aerob";
   } 
   else if (percent >= 60) {
-    zoneCounters.fat += diffSeconds;
+    zoneCounters.fat += 1;
     zoneName = "Fettverbrennung";
   } 
   else if (percent >= 50) {
-    zoneCounters.health += diffSeconds;
+    zoneCounters.health += 1;
     zoneName = "Gesundheitszone";
   } 
   else {
@@ -649,8 +637,8 @@ function calculateZone(currentPulse) {
 
   updateZoneDisplay();
 
-  document.getElementById("trainingStatus").innerText = `Training läuft... Aktuelle Zone: ${zoneName}`;
-
+  document.getElementById("trainingStatus").innerText =
+    `Training läuft... Aktuelle Zone: ${zoneName}`;
 }
 
 function updateZoneDisplay() {
@@ -666,8 +654,8 @@ function updateZoneDisplay() {
     <div style="color:#ff0000">● Extrem: ${formatTime(zoneCounters.extreme)}</div>
     <div style="color:#ff8800">● Anaerob: ${formatTime(zoneCounters.anaerobic)}</div>
     <div style="color:#00cc66">● Aerob: ${formatTime(zoneCounters.aerobic)}</div>
-    <div style="color:#3cc6ff">● Fett: ${formatTime(zoneCounters.fat)}</div>
-    <div style="color:#8888ff">● Gesundheit: ${formatTime(zoneCounters.health)}</div>
+    <div style="color:#3cc6ff">● Fettverbrennung: ${formatTime(zoneCounters.fat)}</div>
+    <div style="color:#8888ff">● Gesundheitszone: ${formatTime(zoneCounters.health)}</div>
   `;
 
   if (zoneChart) {
@@ -704,7 +692,11 @@ function startTimer() {
     document.getElementById("trainingTimer").innerText =
       `${hours}:${minutes}:${seconds}`;
 
+    if (trainingActive && lastPulseValue) {
+      calculateZone(lastPulseValue);
+    }
   }, 1000);
+  
 }
 
 
