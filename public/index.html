@@ -95,6 +95,17 @@ canvas {
   gap: 30px;
 }
 
+.trainingStats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.trainingLeft, .trainingRight {
+  flex: 1;
+}
+
 .zoneLeft {
   flex: 1;
   font-size: 15px;
@@ -109,6 +120,34 @@ canvas {
   width: 220px !important;
   height: 220px !important;
 }
+
+@media (max-width: 768px) {
+
+  .trainingStats {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .zoneLayout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .zoneRight {
+    margin-top: 20px;
+  }
+
+  .zoneRight canvas {
+    width: 180px !important;
+    height: 180px !important;
+  }
+
+  .value {
+    font-size: 28px;
+  }
+
+}
+
 
 </style>
 </head>
@@ -206,10 +245,24 @@ canvas {
       </div>
     </div>
 
-    <div class="card">
-      <div id="trainingTimer" class="value" style="text-align:center; margin-bottom:15px;">
-        00:00:00
+    <div class="card trainingStats">
+      <div class="trainingLeft">
+        <div class="small">Trainingszeit</div>
+        <div id="trainingTimer" class="value">
+          00:00:00
+        </div>
       </div>
+
+      <div class="trainingRight">
+        <div class="small">Ø Puls</div>
+        <div id="avgPulse" class="value">
+          -- bpm
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card">
       <div class="buttons">
         <div class="button" onclick="toggleTraining()" id="trainingBtn">
           Training starten
@@ -219,7 +272,6 @@ canvas {
         Kein Training aktiv
       </div>
     </div>
-
 
     <div class="card zoneLayout">
 
@@ -265,6 +317,37 @@ let trainingStartTime = null;
 let timerInterval = null;
 let zoneChart;
 let lastPulseValue = null;
+let pulseSum = 0;
+let pulseCount = 0;
+
+Chart.register({
+  id: "percentageLabels",
+  afterDraw(chart) {
+
+    const { ctx } = chart;
+    const dataset = chart.data.datasets[0];
+    const meta = chart.getDatasetMeta(0);
+
+    const total = dataset.data.reduce((a,b)=>a+b,0);
+    if (total === 0) return;
+
+    meta.data.forEach((element, index) => {
+
+      const value = dataset.data[index];
+      if (value < 5) return; // nur anzeigen wenn >5%
+
+      const percent = Math.round(value);
+
+      const position = element.tooltipPosition();
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 12px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(percent + "%", position.x, position.y);
+    });
+  }
+});
 
 function setRange(hours, el) {
   currentHours = hours;
@@ -559,6 +642,10 @@ function toggleTraining() {
       extreme: 0
     };
 
+    pulseSum = 0;
+    pulseCount = 0;
+    document.getElementById("avgPulse").innerText = "-- bpm";
+
     trainingStartTime = Date.now();
     document.getElementById("trainingTimer").innerText = "00:00:00";
 
@@ -584,9 +671,8 @@ function toggleTraining() {
         options: {
           cutout: "70%",
           plugins: {
-            legend: {
-              display: false
-            }
+            legend: {display: false},
+            percentageLabels: {}
           }
         }
       });
@@ -694,7 +780,14 @@ function startTimer() {
 
     if (trainingActive && lastPulseValue) {
       calculateZone(lastPulseValue);
+
+      pulseSum += Number(lastPulseValue);
+      pulseCount++;
+
+      const avg = Math.round(pulseSum / pulseCount);
+      document.getElementById("avgPulse").innerText = avg + " bpm";
     }
+
   }, 1000);
   
 }
