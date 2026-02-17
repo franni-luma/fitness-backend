@@ -203,9 +203,7 @@ h1 {
 
     <div class="card">
       <h3>Pulsverlauf</h3>
-      <div class="chartBox">
         <canvas id="pulseChart"></canvas>
-      </div>
     </div>
 
     <div class="card">
@@ -535,8 +533,6 @@ async function loadData() {
         }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
         interaction: {
           mode: 'nearest',
           intersect: false
