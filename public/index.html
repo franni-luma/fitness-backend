@@ -211,6 +211,11 @@ canvas {
     </div>
 
     <div class="card">
+      <h3>Verteilung der Herzfrequenzzonen</h3>
+      <canvas id="zoneChart"></canvas>
+    </div>
+
+    <div class="card">
       <h3>Erklärung der Herzfrequenzzonen:</h3>
       <ul>
         <li><span class="value">50–60%</span> Gesundheitszone: Förderung der Gesundheit</li>
@@ -239,6 +244,7 @@ let zoneCounters = {
 let lastMeasurementTime = null;
 let trainingStartTime = null;
 let timerInterval = null;
+let zoneChart;
 
 
 function setRange(hours, el) {
@@ -539,8 +545,40 @@ function toggleTraining() {
 
     trainingStartTime = Date.now();
     lastMeasurementTime = Date.now();
+    document.getElementById("trainingTimer").innerText = "00:00:00";
 
     startTimer();
+
+    if (!zoneChart) {
+      zoneChart = new Chart(document.getElementById("zoneChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Extrem", "Anaerob", "Aerob", "Fett", "Gesundheit"],
+          datasets: [{
+            data: [0,0,0,0,0],
+            backgroundColor: [
+              "#ff0000",
+              "#ff8800",
+              "#00cc66",
+              "#3cc6ff",
+              "#8888ff"
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: "65%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { color: "white",
+              padding: 15
+            }
+            }
+          }
+        }
+      });
+    }
 
   } else {
     btn.innerText = "Training starten";
@@ -600,17 +638,40 @@ function calculateZone(currentPulse) {
 
 function updateZoneDisplay() {
 
-  function toMinutes(seconds) {
-    return Math.floor(seconds / 60);
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+
+    return (String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0"));
   }
 
   document.getElementById("zoneTimes").innerHTML = `
-    Extrem: ${toMinutes(zoneCounters.extreme)} Min<br>
-    Anaerob: ${toMinutes(zoneCounters.anaerobic)} Min<br>
-    Aerob: ${toMinutes(zoneCounters.aerobic)} Min<br>
-    Fettverbrennung: ${toMinutes(zoneCounters.fat)} Min<br>
-    Gesundheitszone: ${toMinutes(zoneCounters.health)} Min
+    Extrem: ${formatTime(zoneCounters.extreme)}<br>
+    Anaerob: ${formatTime(zoneCounters.anaerobic)}<br>
+    Aerob: ${formatTime(zoneCounters.aerobic)}<br>
+    Fettverbrennung: ${formatTime(zoneCounters.fat)}<br>
+    Gesundheitszone: ${formatTime(zoneCounters.health)}
   `;
+
+  if (zoneChart) {
+    const total =
+      zoneCounters.extreme +
+      zoneCounters.anaerobic +
+      zoneCounters.aerobic +
+      zoneCounters.fat +
+      zoneCounters.health;
+
+    if (total > 0) {
+      zoneChart.data.datasets[0].data = [
+        (zoneCounters.extreme / total) * 100,
+        (zoneCounters.anaerobic / total) * 100,
+        (zoneCounters.aerobic / total) * 100,
+        (zoneCounters.fat / total) * 100,
+        (zoneCounters.health / total) * 100
+      ];
+    }
+    zoneChart.update();
+  }
 }
 
 function startTimer() {
