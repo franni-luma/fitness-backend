@@ -70,10 +70,17 @@ h1 {
   font-weight: bold;
 }
 
-canvas {
-  width: 100% !important;
-  height: 300px !important;
+.chartBox {
+  position: relative;
+  width: 100%;
+  height: 300px;
 }
+
+.chartBox canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 
 .small { 
   font-size:12px; 
@@ -196,7 +203,9 @@ canvas {
 
     <div class="card">
       <h3>Pulsverlauf</h3>
-      <canvas id="pulseChart"></canvas>
+      <div class="chartBox">
+        <canvas id="pulseChart"></canvas>
+      </div>
     </div>
 
     <div class="card">
@@ -526,6 +535,8 @@ async function loadData() {
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         interaction: {
           mode: 'nearest',
           intersect: false
