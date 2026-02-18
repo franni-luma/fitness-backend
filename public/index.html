@@ -270,6 +270,35 @@ h1 {
   text-align: center;
 }
 
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;   /* WICHTIG */
+}
+
+.historyTable th,
+.historyTable td {
+  padding: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  white-space: nowrap;   /* verhindert Umbruch */
+}
+
+.historyTable th:nth-child(1),
+.historyTable td:nth-child(1) {
+  width: 45%;
+}
+
+.historyTable th:nth-child(2),
+.historyTable td:nth-child(2) {
+  width: 25%;
+  text-align: left;
+}
+
+.historyTable th:nth-child(3),
+.historyTable td:nth-child(3) {
+  width: 30%;
+}
+
 
 
 @keyframes wave {
