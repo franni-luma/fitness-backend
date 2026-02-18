@@ -227,24 +227,13 @@ h1 {
   font-weight: 600;
 }
 
-#historySection.historyGrid {
+.historyTopRow {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 30px;
+  margin-bottom: 25px;
 }
 
-#historySection .heroCard {
-  grid-column: span 1;
-}
-
-#historySection canvas {
-  width: 100% !important;
-  height: 300px !important;
-}
-
-#historySection .historyTableCard {
-  grid-column: span 3;
-}
 
 @keyframes wave {
   0% { transform: rotate(0deg); }
@@ -336,15 +325,9 @@ h1 {
     opacity: 0.6;
   }
 
-
-  #historySection.historyGrid {
+  .historyTopRow {
     grid-template-columns: 1fr;
   }
-
-  .historyTableCard {
-    grid-column: span 1;
-  }
-
 }
 
 </style>
@@ -497,15 +480,32 @@ h1 {
     </div>
   </div>
 
-  <div id="historySection" class="historyGrid" style="display:none;">
+  <div id="historySection" style="display:none;">
+    <div class="historyTopRow">
 
-    <div class="card heroCard">
-      <div class="heroGlow"></div>
-      <div class="avatarSelector">
-        <button onclick="setGender('female')" id="btnFemale">👩 Frau</button>
-        <button onclick="setGender('male')" id="btnMale">👨 Mann</button>
+      <div class="card heroCard">
+        <div class="heroGlow"></div>
+        <div class="avatarSelector">
+          <button onclick="setGender('female')" id="btnFemale">👩 Frau</button>
+          <button onclick="setGender('male')" id="btnMale">👨 Mann</button>
+        </div>
+        <img src="" id="avatar" class="heroAvatar">
       </div>
-      <img src="" id="avatar" class="heroAvatar">
+
+      <div class="card historyTableCard">
+        <h3>Letzte Trainings</h3>
+        <table class="historyTable">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Dauer</th>
+              <th>Ø Puls</th>
+            </tr>
+          </thead>
+          <tbody id="historyList"></tbody>
+        </table>
+      </div>
+
     </div>
 
     <div class="card">
@@ -513,20 +513,6 @@ h1 {
       <canvas id="weeklyChart"></canvas>
     </div>
 
-    <div class="card historyTableCard">
-      <h3>Letzte Trainings</h3>
-
-      <table class="historyTable">
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Dauer</th>
-            <th>Ø Puls</th>
-          </tr>
-        </thead>
-        <tbody id="historyList"></tbody>
-      </table>
-    </div>
   </div>
 
 </div>
