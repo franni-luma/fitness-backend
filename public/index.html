@@ -330,9 +330,6 @@ h1 {
       <div class="zoneLeft">
         <h3>Zeit in den Herzfrequenzzonen</h3>
         <div id="zoneTimes"></div>
-        <hr style="margin:20px 0; opacity:0.2;">
-        <h3>Deine Pulsbereiche</h3>
-        <div id="zoneRangesStyled"></div>
       </div>
 
       <div class="zoneRight">
@@ -373,6 +370,7 @@ let zoneChart;
 let lastPulseValue = null;
 let pulseSum = 0;
 let pulseCount = 0;
+let calculatedZones = null;
 
 Chart.register({
   id: "percentageLabels",
@@ -692,7 +690,9 @@ function calculateZones() {
     ];
   }
 
-  displayZoneRanges(result);
+  calculatedZones = result;
+  updateZoneDisplay();
+
 }
 
 function displayZoneRanges(zones) {
@@ -860,16 +860,36 @@ function updateZoneDisplay() {
   function formatTime(seconds) {
     const min = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
-
-    return (String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0"));
+    return String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
   }
 
+  if (!calculatedZones) return;
+
   document.getElementById("zoneTimes").innerHTML = `
-    <div style="color:#ff0000">● Extrem: ${formatTime(zoneCounters.extreme)}</div>
-    <div style="color:#ff8800">● Anaerob: ${formatTime(zoneCounters.anaerobic)}</div>
-    <div style="color:#00cc66">● Aerob: ${formatTime(zoneCounters.aerobic)}</div>
-    <div style="color:#3cc6ff">● Fettverbrennung: ${formatTime(zoneCounters.fat)}</div>
-    <div style="color:#8888ff">● Gesundheitszone: ${formatTime(zoneCounters.health)}</div>
+    <div style="color:#ff0000">
+      ● Extrem: ${formatTime(zoneCounters.extreme)}
+      <span style="opacity:0.6;">(${calculatedZones.extreme[0]}–${calculatedZones.extreme[1]} bpm)</span>
+    </div>
+
+    <div style="color:#ff8800">
+      ● Anaerob: ${formatTime(zoneCounters.anaerobic)}
+      <span style="opacity:0.6;">(${calculatedZones.anaerobic[0]}–${calculatedZones.anaerobic[1]} bpm)</span>
+    </div>
+
+    <div style="color:#00cc66">
+      ● Aerob: ${formatTime(zoneCounters.aerobic)}
+      <span style="opacity:0.6;">(${calculatedZones.aerobic[0]}–${calculatedZones.aerobic[1]} bpm)</span>
+    </div>
+
+    <div style="color:#3cc6ff">
+      ● Fettverbrennung: ${formatTime(zoneCounters.fat)}
+      <span style="opacity:0.6;">(${calculatedZones.fat[0]}–${calculatedZones.fat[1]} bpm)</span>
+    </div>
+
+    <div style="color:#8888ff">
+      ● Gesundheit: ${formatTime(zoneCounters.health)}
+      <span style="opacity:0.6;">(${calculatedZones.health[0]}–${calculatedZones.health[1]} bpm)</span>
+    </div>
   `;
 
   if (zoneChart) {
@@ -889,6 +909,7 @@ function updateZoneDisplay() {
         (zoneCounters.health / total) * 100
       ];
     }
+
     zoneChart.update();
   }
 }
