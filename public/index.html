@@ -227,6 +227,29 @@ h1 {
   font-weight: 600;
 }
 
+.historyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+/* Hero Card links */
+.historyGrid .heroCard {
+  grid-column: span 1;
+}
+
+/* Wochenchart breiter */
+.historyGrid canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* Letzte Trainings über gesamte Breite */
+.historyGrid .historyTableCard {
+  grid-column: span 3;
+}
+
+
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(15deg); }
@@ -296,6 +319,34 @@ h1 {
 
   .value {
     font-size: 22px;
+  }
+
+  .zoneRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .zoneLeftPart {
+    font-size: 14px;
+  }
+
+  .zoneTime {
+    margin-left: 0;
+    font-size: 14px;
+  }
+
+  .zoneRange {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+
+
+  .historyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .historyTableCard {
+    grid-column: span 1;
   }
 
 }
@@ -450,7 +501,8 @@ h1 {
     </div>
   </div>
 
-  <div id="historySection" style="display:none;">
+  <div id="historySection" class="historyGrid" style="display:none;">
+
     <div class="card heroCard">
       <div class="heroGlow"></div>
       <div class="avatarSelector">
@@ -465,8 +517,9 @@ h1 {
       <canvas id="weeklyChart"></canvas>
     </div>
 
-    <div class="card">
+    <div class="card historyTableCard">
       <h3>Letzte Trainings</h3>
+
       <table class="historyTable">
         <thead>
           <tr>
