@@ -107,25 +107,29 @@ h1 {
   line-height: 1.8;
 }
 
-.zoneRangeItem {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 14px;
-}
-
-.zoneRangeLabel {
+.zoneRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  margin: 4px 0;
 }
 
-.zoneDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.zoneLeftPart {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
+.zoneTime {
+  color: #ffffff;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.zoneRange {
+  opacity: 0.5;
+  font-size: 13px;
+}
 
 .zoneRight {
   width: 220px;
@@ -866,30 +870,66 @@ function updateZoneDisplay() {
   if (!calculatedZones) return;
 
   document.getElementById("zoneTimes").innerHTML = `
-    <div style="color:#ff0000">
-      ● Extrem: ${formatTime(zoneCounters.extreme)}
-      <span style="opacity:0.6;">(${calculatedZones.extreme[0]}–${calculatedZones.extreme[1]} bpm)</span>
+  
+  <div class="zoneRow">
+    <div class="zoneLeftPart" style="color:#ff0000">
+      ● Extrem
     </div>
+    <div class="zoneTime">
+      ${formatTime(zoneCounters.extreme)}
+    </div>
+    <div class="zoneRange">
+      (${calculatedZones.extreme[0]}–${calculatedZones.extreme[1]} bpm)
+    </div>
+  </div>
 
-    <div style="color:#ff8800">
-      ● Anaerob: ${formatTime(zoneCounters.anaerobic)}
-      <span style="opacity:0.6;">(${calculatedZones.anaerobic[0]}–${calculatedZones.anaerobic[1]} bpm)</span>
+  <div class="zoneRow">
+    <div class="zoneLeftPart" style="color:#ff8800">
+      ● Anaerob
     </div>
+    <div class="zoneTime">
+      ${formatTime(zoneCounters.anaerobic)}
+    </div>
+    <div class="zoneRange">
+      (${calculatedZones.anaerobic[0]}–${calculatedZones.anaerobic[1]} bpm)
+    </div>
+  </div>
 
-    <div style="color:#00cc66">
-      ● Aerob: ${formatTime(zoneCounters.aerobic)}
-      <span style="opacity:0.6;">(${calculatedZones.aerobic[0]}–${calculatedZones.aerobic[1]} bpm)</span>
+  <div class="zoneRow">
+    <div class="zoneLeftPart" style="color:#00cc66">
+      ● Aerob
     </div>
+    <div class="zoneTime">
+      ${formatTime(zoneCounters.aerobic)}
+    </div>
+    <div class="zoneRange">
+      (${calculatedZones.aerobic[0]}–${calculatedZones.aerobic[1]} bpm)
+    </div>
+  </div>
 
-    <div style="color:#3cc6ff">
-      ● Fettverbrennung: ${formatTime(zoneCounters.fat)}
-      <span style="opacity:0.6;">(${calculatedZones.fat[0]}–${calculatedZones.fat[1]} bpm)</span>
+  <div class="zoneRow">
+    <div class="zoneLeftPart" style="color:#3cc6ff">
+      ● Fettverbrennung
     </div>
+    <div class="zoneTime">
+      ${formatTime(zoneCounters.fat)}
+    </div>
+    <div class="zoneRange">
+      (${calculatedZones.fat[0]}–${calculatedZones.fat[1]} bpm)
+    </div>
+  </div>
 
-    <div style="color:#8888ff">
-      ● Gesundheit: ${formatTime(zoneCounters.health)}
-      <span style="opacity:0.6;">(${calculatedZones.health[0]}–${calculatedZones.health[1]} bpm)</span>
+  <div class="zoneRow">
+    <div class="zoneLeftPart" style="color:#8888ff">
+      ● Gesundheit
     </div>
+    <div class="zoneTime">
+      ${formatTime(zoneCounters.health)}
+    </div>
+    <div class="zoneRange">
+      (${calculatedZones.health[0]}–${calculatedZones.health[1]} bpm)
+    </div>
+  </div>
   `;
 
   if (zoneChart) {
