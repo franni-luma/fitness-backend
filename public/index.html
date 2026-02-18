@@ -107,6 +107,26 @@ h1 {
   line-height: 1.8;
 }
 
+.zoneRangeItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.zoneRangeLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoneDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+
 .zoneRight {
   width: 220px;
 }
@@ -310,6 +330,9 @@ h1 {
       <div class="zoneLeft">
         <h3>Zeit in den Herzfrequenzzonen</h3>
         <div id="zoneTimes"></div>
+        <hr style="margin:20px 0; opacity:0.2;">
+        <h3>Deine Pulsbereiche</h3>
+        <div id="zoneRangesStyled"></div>
       </div>
 
       <div class="zoneRight">
@@ -317,7 +340,6 @@ h1 {
       </div>
 
     </div>
-
 
     <div class="card">
       <h3>Erklärung der Herzfrequenzzonen:</h3>
@@ -631,6 +653,7 @@ async function loadData() {
 }
 
 function updateMaxPulse() {
+
   const age = parseInt(document.getElementById("ageInput").value);
 
   if (!age || age <= 0) {
@@ -642,6 +665,78 @@ function updateMaxPulse() {
   document.getElementById("maxPulse").innerText = max + " bpm";
 
   localStorage.setItem("age", age);
+
+  calculateZones();
+}
+
+function calculateZones() {
+  const age = parseInt(document.getElementById("ageInput").value);
+  if (!age) return;
+
+  const maxHF = 220 - age;
+
+  const zones = {
+    health:   [0.50, 0.60],
+    fat:      [0.60, 0.70],
+    aerobic:  [0.70, 0.80],
+    anaerobic:[0.80, 0.90],
+    extreme:  [0.90, 1.00]
+  };
+
+  const result = {};
+
+  for (let key in zones) {
+    result[key] = [
+      Math.round(maxHF * zones[key][0]),
+      Math.round(maxHF * zones[key][1])
+    ];
+  }
+
+  displayZoneRanges(result);
+}
+
+function displayZoneRanges(zones) {
+  document.getElementById("zoneRangesStyled").innerHTML = `
+    <div class="zoneRangeItem">
+      <div class="zoneRangeLabel">
+        <div class="zoneDot" style="background:#ff0000"></div>
+        Extrem
+      </div>
+      <div>${zones.extreme[0]} - ${zones.extreme[1]} bpm</div>
+    </div>
+
+    <div class="zoneRangeItem">
+      <div class="zoneRangeLabel">
+        <div class="zoneDot" style="background:#ff8800"></div>
+        Anaerob
+      </div>
+      <div>${zones.anaerobic[0]} - ${zones.anaerobic[1]} bpm</div>
+    </div>
+
+    <div class="zoneRangeItem">
+      <div class="zoneRangeLabel">
+        <div class="zoneDot" style="background:#00cc66"></div>
+        Aerob
+      </div>
+      <div>${zones.aerobic[0]} - ${zones.aerobic[1]} bpm</div>
+    </div>
+
+    <div class="zoneRangeItem">
+      <div class="zoneRangeLabel">
+        <div class="zoneDot" style="background:#3cc6ff"></div>
+        Fettverbrennung
+      </div>
+      <div>${zones.fat[0]} - ${zones.fat[1]} bpm</div>
+    </div>
+
+    <div class="zoneRangeItem">
+      <div class="zoneRangeLabel">
+        <div class="zoneDot" style="background:#8888ff"></div>
+        Gesundheit
+      </div>
+      <div>${zones.health[0]} - ${zones.health[1]} bpm</div>
+    </div>
+  `;
 }
 
 window.onload = function() {
