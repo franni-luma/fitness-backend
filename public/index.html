@@ -223,6 +223,9 @@ h1 {
       <div class="button" onclick="switchTab('zones')" id="tabZones">
         Pulsbereiche
       </div>
+      <div class="button" onclick="switchTab('history')" id="tabHistory">
+        Trainingshistorie
+      </div>
     </div>
   </div>
 
@@ -261,7 +264,6 @@ h1 {
       <canvas id="spo2Chart"></canvas>
     </div>
   </div>
-
 
   <div id="zoneSection" style="display:none;">
 
@@ -354,11 +356,30 @@ h1 {
     </div>
   </div>
 
+  <div id="historySection" style="display:none;">
+    <div class="card" style="text-align:center;">
+      <img src="avatar.png" style="width:100px; border-radius:50%;">
+      <h3>Franziska</h3>
+    </div>
+
+    <div class="card">
+      <h3>Wochenübersicht</h3>
+      <canvas id="weeklyChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Letzte Trainings</h3>
+      <div id="historyList"></div>
+    </div>
+
+  </div>
+
 </div>
 <script>
 let pulseChart;
 let spo2Chart;
 let currentHours = 1;
+
 
 let trainingActive = false;
 let zoneCounters = {
@@ -375,6 +396,9 @@ let lastPulseValue = null;
 let pulseSum = 0;
 let pulseCount = 0;
 let calculatedZones = null;
+
+
+let weeklyChart;
 
 Chart.register({
   id: "percentageLabels",
@@ -419,15 +443,26 @@ function switchTab(tab) {
 
   document.getElementById("tabVital").classList.remove("active");
   document.getElementById("tabZones").classList.remove("active");
+  document.getElementById("tabHistory").classList.remove("active");
+
+  document.getElementById("vitalSection").style.display = "none";
+  document.getElementById("zoneSection").style.display = "none";
+  document.getElementById("historySection").style.display = "none";
 
   if (tab === "vital") {
     document.getElementById("vitalSection").style.display = "block";
-    document.getElementById("zoneSection").style.display = "none";
     document.getElementById("tabVital").classList.add("active");
-  } else {
-    document.getElementById("vitalSection").style.display = "none";
+  }
+
+  if (tab === "zones") {
     document.getElementById("zoneSection").style.display = "block";
     document.getElementById("tabZones").classList.add("active");
+  }
+
+  if (tab === "history") {
+    document.getElementById("historySection").style.display = "block";
+    document.getElementById("tabHistory").classList.add("active");
+    loadHistory();
   }
 }
 
@@ -814,6 +849,19 @@ function toggleTraining() {
     btn.innerText = "Training starten";
     btn.classList.remove("active");
     document.getElementById("trainingStatus").innerText = "Training beendet";
+    
+    // Training speichern
+    const duration = Math.floor((Date.now() - trainingStartTime) / 1000);
+
+    let trainings = JSON.parse(localStorage.getItem("trainings")) || [];
+
+    trainings.push({
+      date: new Date().toISOString(),
+      duration: duration,
+      avgPulse: Math.round(pulseSum / pulseCount)
+    });
+
+    localStorage.setItem("trainings", JSON.stringify(trainings));
 
     clearInterval(timerInterval);
   }
@@ -981,6 +1029,54 @@ function startTimer() {
   
 }
 
+function loadHistory() {
+
+  const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
+
+  // Letzte Trainings anzeigen
+  const list = document.getElementById("historyList");
+
+  list.innerHTML = trainings.slice(-5).reverse().map(t => {
+    const date = new Date(t.date).toLocaleDateString("de-DE");
+    const min = Math.floor(t.duration / 60);
+    return `<div style="margin:5px 0;">
+      ${date} – ${min} min – Ø ${t.avgPulse} bpm
+    </div>`;
+  }).join("");
+
+  // Wochen-Daten berechnen
+  const days = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+  let weeklyData = [0,0,0,0,0,0,0];
+
+  trainings.forEach(t => {
+    const d = new Date(t.date);
+    let day = d.getDay(); 
+    day = day === 0 ? 6 : day - 1; // Sonntag korrekt verschieben
+    weeklyData[day] += Math.floor(t.duration / 60);
+  });
+
+  if (!weeklyChart) {
+    weeklyChart = new Chart(document.getElementById("weeklyChart"), {
+      type: "bar",
+      data: {
+        labels: days,
+        datasets: [{
+          data: weeklyData,
+          backgroundColor: "#3cc6ff"
+        }]
+      },
+      options: {
+        plugins: { legend: { display:false } },
+        scales: {
+          y: { beginAtZero:true }
+        }
+      }
+    });
+  } else {
+    weeklyChart.data.datasets[0].data = weeklyData;
+    weeklyChart.update();
+  }
+}
 
 loadLiveValues();
 loadData();
