@@ -227,28 +227,24 @@ h1 {
   font-weight: 600;
 }
 
-.historyGrid {
+#historySection.historyGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 25px;
 }
 
-/* Hero Card links */
-.historyGrid .heroCard {
+#historySection .heroCard {
   grid-column: span 1;
 }
 
-/* Wochenchart breiter */
-.historyGrid canvas {
+#historySection canvas {
   width: 100% !important;
   height: 300px !important;
 }
 
-/* Letzte Trainings über gesamte Breite */
-.historyGrid .historyTableCard {
+#historySection .historyTableCard {
   grid-column: span 3;
 }
-
 
 @keyframes wave {
   0% { transform: rotate(0deg); }
@@ -341,7 +337,7 @@ h1 {
   }
 
 
-  .historyGrid {
+  #historySection.historyGrid {
     grid-template-columns: 1fr;
   }
 
