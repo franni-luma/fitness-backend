@@ -26,11 +26,13 @@ h1 {
 }
 
 .card {
-  background: #122436;
-  border-radius: 20px;
-  padding: 20px;
+  background: linear-gradient(145deg,#122436,#0f1f2f);
+  border-radius: 22px;
+  padding: 25px;
   margin-bottom: 25px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
 }
 
 .flex {
@@ -171,6 +173,47 @@ h1 {
 .wave {
   animation: wave 0.6s ease;
 }
+
+/* HERO CARD */
+.heroCard {
+  position: relative;
+  text-align: center;
+  padding: 40px 20px 30px 20px;
+  overflow: hidden;
+}
+
+.heroGlow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(60,198,255,0.35) 0%, transparent 70%);
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.heroAvatar {
+  position: relative;
+  width: 160px;
+  z-index: 2;
+  transition: transform 0.4s ease;
+}
+
+.heroName {
+  margin-top: 15px;
+  font-size: 26px;
+  font-weight: 600;
+  background: linear-gradient(90deg,#3cc6ff,#6ee7ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth hover effect */
+.heroAvatar:hover {
+  transform: scale(1.05);
+}
+
 
 @keyframes wave {
   0% { transform: rotate(0deg); }
@@ -399,10 +442,12 @@ h1 {
   </div>
 
   <div id="historySection" style="display:none;">
-    <div class="card" style="text-align:center;">
-      <img src="avatar.png" id="avatar" class="avatar">
-      <h3>Franziska</h3>
+    <div class="card heroCard">
+      <div class="heroGlow"></div>
+      <img src="images/avatar.png" id="avatar" class="heroAvatar">
+      <div class="heroName">Franziska</div>
     </div>
+
 
     <div class="card">
       <h3>Wochenübersicht</h3>
@@ -1119,7 +1164,7 @@ function loadHistory() {
     const d = new Date(t.date);
     let day = d.getDay();
     day = day === 0 ? 6 : day - 1;
-    weeklyData[day] += Math.floor(t.duration / 60); // Minuten
+    weeklyData[day] += t.duration;
   });
 
   if (!weeklyChart) {
@@ -1129,12 +1174,28 @@ function loadHistory() {
         labels: days,
         datasets: [{
           data: weeklyData,
-          backgroundColor: "#3cc6ff"
+          backgroundColor: "rgba(60,198,255,0.9)",
+          borderRadius: 12
         }]
       },
       options: {
         plugins: { legend: { display:false } },
-        scales: { y: { beginAtZero:true } }
+        scales: {
+          x: {
+            grid: { display:false },
+            ticks: { color:"#9fbad0" }
+          },
+          y: {
+            beginAtZero:true,
+            grid: { color:"rgba(255,255,255,0.05)" },
+            ticks: {
+              color:"#9fbad0",
+              callback: function(value) {
+                return Math.floor(value / 60) + " min";
+              }
+            }
+          }
+        }
       }
     });
   } else {
