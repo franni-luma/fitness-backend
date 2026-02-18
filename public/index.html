@@ -234,6 +234,12 @@ h1 {
   margin-bottom: 25px;
 }
 
+#weeklyChart {
+  width: 600px !important;
+  height: 260px !important;
+  margin: 0 auto; 
+  display: block;
+}
 
 @keyframes wave {
   0% { transform: rotate(0deg); }
@@ -1250,6 +1256,8 @@ function loadHistory() {
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display:false },
           tooltip: {
