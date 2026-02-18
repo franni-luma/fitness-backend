@@ -241,6 +241,21 @@ h1 {
   display: block;
 }
 
+#pagination button {
+  background:#1a3147;
+  border:none;
+  padding:6px 12px;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+#pagination button:disabled {
+  opacity:0.3;
+  cursor:not-allowed;
+}
+
+
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(15deg); }
@@ -510,6 +525,11 @@ h1 {
           </thead>
           <tbody id="historyList"></tbody>
         </table>
+        <div id="pagination" style="margin-top:15px; text-align:center;">
+          <button onclick="prevPage()">← Zurück</button>
+          <span id="pageInfo" style="margin:0 15px;"></span>
+          <button onclick="nextPage()">Weiter →</button>
+        </div>
       </div>
 
     </div>
@@ -546,6 +566,9 @@ let calculatedZones = null;
 
 
 let weeklyChart;
+let currentPage = 1;
+const itemsPerPage = 5;
+
 
 Chart.register({
   id: "percentageLabels",
@@ -1217,7 +1240,18 @@ function loadHistory() {
   // Tabelle füllen
   const list = document.getElementById("historyList");
 
-  list.innerHTML = trainings.slice().reverse().map(t => {
+  const reversed = trainings.slice().reverse();
+  const totalPages = Math.ceil(reversed.length / itemsPerPage);
+
+  if (currentPage > totalPages) currentPage = totalPages || 1;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+
+  const pageItems = reversed.slice(start, end);
+
+  list.innerHTML = pageItems.map(t => {
     const date = new Date(t.date).toLocaleDateString("de-DE");
     const duration = formatDuration(t.duration);
     const avg = t.avgPulse ?? 0;
@@ -1231,10 +1265,14 @@ function loadHistory() {
     `;
   }).join("");
 
-  // Wochen-Daten berechnen (in Minuten oder Sekunden - du nutzt aktuell Minuten)
+  document.getElementById("pageInfo").innerText = `Seite ${currentPage} von ${totalPages || 1}`;
+  const buttons = document.querySelectorAll("#pagination button");
+  buttons[0].disabled = currentPage === 1;
+  buttons[1].disabled = currentPage === totalPages;
+
   const days = ["Mo","Di","Mi","Do","Fr","Sa","So"];
   let weeklyData = [0,0,0,0,0,0,0];
-  let weeklyCount = [0,0,0,0,0,0,0];   // ← NEU
+  let weeklyCount = [0,0,0,0,0,0,0]; 
 
   trainings.forEach(t => {
     const d = new Date(t.date);
@@ -1308,6 +1346,16 @@ function loadHistory() {
     weeklyChart.update();
   }
 }
+function nextPage() {
+  currentPage++;
+  loadHistory();
+}
+
+function prevPage() {
+  currentPage--;
+  loadHistory();
+}
+
 
 loadLiveValues();
 loadData();
