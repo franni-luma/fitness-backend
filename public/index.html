@@ -1215,7 +1215,28 @@ function loadHistory() {
         }]
       },
       options: {
-        plugins: { legend: { display:false } },
+        plugins: {
+          legend: { display:false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+
+                const dayIndex = context.dataIndex;
+                const count = weeklyCount[dayIndex];
+                const seconds = context.raw;
+
+                const h = String(Math.floor(seconds / 3600)).padStart(2,"0");
+                const m = String(Math.floor((seconds % 3600) / 60)).padStart(2,"0");
+                const s = String(seconds % 60).padStart(2,"0");
+
+                return [
+                  `Trainings: ${count}`,
+                  `Gesamtzeit: ${h}:${m}:${s}`
+                ];
+              }
+            }
+          }
+        },
         scales: {
           x: {
             grid: { display:false },
@@ -1226,7 +1247,7 @@ function loadHistory() {
             grid: { color:"rgba(255,255,255,0.05)" },
             ticks: {
               color:"#9fbad0",
-              callback: function(con) {
+              callback: function(value) {
 
                 const h = String(Math.floor(value / 3600)).padStart(2,"0");
                 const m = String(Math.floor((value % 3600) / 60)).padStart(2,"0");
@@ -1234,25 +1255,6 @@ function loadHistory() {
 
                 return `${h}:${m}:${s}`;
               }
-            }
-          }
-        },
-         tooltip: {
-          callbacks: {
-            label: function(context) {
-
-              const dayIndex = context.dataIndex;
-              const count = weeklyCount[dayIndex];
-              const seconds = context.raw;
-
-              const h = String(Math.floor(seconds / 3600)).padStart(2,"0");
-              const m = String(Math.floor((seconds % 3600) / 60)).padStart(2,"0");
-              const s = String(seconds % 60).padStart(2,"0");
-
-              return [
-                `Trainings: ${count}`,
-                `Gesamtzeit: ${h}:${m}:${s}`
-              ];
             }
           }
         }
