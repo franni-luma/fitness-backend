@@ -200,20 +200,32 @@ h1 {
   transition: transform 0.4s ease;
 }
 
-.heroName {
-  margin-top: 15px;
-  font-size: 26px;
-  font-weight: 600;
-  background: linear-gradient(90deg,#3cc6ff,#6ee7ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Smooth hover effect */
 .heroAvatar:hover {
   transform: scale(1.05);
 }
 
+.avatarSelector {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 15px;
+}
+
+.avatarSelector button {
+  background: #1a3147;
+  border: none;
+  padding: 8px 14px;
+  margin: 0 5px;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.avatarSelector button.activeGender {
+  background: #3cc6ff;
+  color: black;
+  font-weight: 600;
+}
 
 @keyframes wave {
   0% { transform: rotate(0deg); }
@@ -222,8 +234,6 @@ h1 {
   75% { transform: rotate(10deg); }
   100% { transform: rotate(0deg); }
 }
-
-
 
 @media (max-width: 768px) {
 
@@ -289,7 +299,6 @@ h1 {
   }
 
 }
-
 
 </style>
 </head>
@@ -444,10 +453,12 @@ h1 {
   <div id="historySection" style="display:none;">
     <div class="card heroCard">
       <div class="heroGlow"></div>
-      <img src="images/avatar.png" id="avatar" class="heroAvatar">
-      <div class="heroName">Franziska</div>
+      <div class="avatarSelector">
+        <button onclick="setGender('female')" id="btnFemale">👩 Frau</button>
+        <button onclick="setGender('male')" id="btnMale">👨 Mann</button>
+      </div>
+      <img src="" id="avatar" class="heroAvatar">
     </div>
-
 
     <div class="card">
       <h3>Wochenübersicht</h3>
@@ -1128,6 +1139,29 @@ function startTimer() {
   }, 1000);
   
 }
+
+function setGender(gender) {
+  const avatar = document.getElementById("avatar");
+  const btnFemale = document.getElementById("btnFemale");
+  const btnMale = document.getElementById("btnMale");
+
+  localStorage.setItem("gender", gender);
+
+  if (gender === "female") {
+    avatar.src = "images/female.png";
+    btnFemale.classList.add("activeGender");
+    btnMale.classList.remove("activeGender");
+  } else {
+    avatar.src = "images/male.png";
+    btnMale.classList.add("activeGender");
+    btnFemale.classList.remove("activeGender");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const savedGender = localStorage.getItem("gender") || "female";
+  setGender(savedGender);
+});
 
 function formatDuration(seconds) {
   const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
