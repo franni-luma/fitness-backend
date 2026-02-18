@@ -1193,12 +1193,14 @@ function loadHistory() {
   // Wochen-Daten berechnen (in Minuten oder Sekunden - du nutzt aktuell Minuten)
   const days = ["Mo","Di","Mi","Do","Fr","Sa","So"];
   let weeklyData = [0,0,0,0,0,0,0];
+  let weeklyCount = [0,0,0,0,0,0,0];   // ← NEU
 
   trainings.forEach(t => {
     const d = new Date(t.date);
     let day = d.getDay();
     day = day === 0 ? 6 : day - 1;
     weeklyData[day] += t.duration;
+    weeklyCount[day] += 1;
   });
 
   if (!weeklyChart) {
@@ -1220,13 +1222,37 @@ function loadHistory() {
             ticks: { color:"#9fbad0" }
           },
           y: {
-            beginAtZero:true,
+            beginAtZero: true,
             grid: { color:"rgba(255,255,255,0.05)" },
             ticks: {
               color:"#9fbad0",
-              callback: function(value) {
-                return Math.floor(value / 60) + " min";
+              callback: function(con) {
+
+                const h = String(Math.floor(value / 3600)).padStart(2,"0");
+                const m = String(Math.floor((value % 3600) / 60)).padStart(2,"0");
+                const s = String(value % 60).padStart(2,"0");
+
+                return `${h}:${m}:${s}`;
               }
+            }
+          }
+        },
+         tooltip: {
+          callbacks: {
+            label: function(context) {
+
+              const dayIndex = context.dataIndex;
+              const count = weeklyCount[dayIndex];
+              const seconds = context.raw;
+
+              const h = String(Math.floor(seconds / 3600)).padStart(2,"0");
+              const m = String(Math.floor((seconds % 3600) / 60)).padStart(2,"0");
+              const s = String(seconds % 60).padStart(2,"0");
+
+              return [
+                `Trainings: ${count}`,
+                `Gesamtzeit: ${h}:${m}:${s}`
+              ];
             }
           }
         }
