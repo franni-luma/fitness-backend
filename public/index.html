@@ -241,19 +241,35 @@ h1 {
   display: block;
 }
 
+#pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 #pagination button {
-  background:#1a3147;
-  border:none;
-  padding:6px 12px;
-  border-radius:10px;
-  color:white;
-  cursor:pointer;
+  width: 110px;   
+  background: #1a3147;
+  border: none;
+  padding: 8px 0;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 #pagination button:disabled {
-  opacity:0.3;
-  cursor:not-allowed;
+  opacity: 0.3;
+  cursor: not-allowed;
 }
+
+#pageInfo {
+  min-width: 140px;  
+  text-align: center;
+}
+
 
 
 @keyframes wave {
@@ -1252,7 +1268,13 @@ function loadHistory() {
   const pageItems = reversed.slice(start, end);
 
   list.innerHTML = pageItems.map(t => {
-    const date = new Date(t.date).toLocaleDateString("de-DE");
+    const date = 
+      new Date(t.date).toLocaleDateString("de-DE") + " " + 
+      new Date(t.date).toLocaleTimeString("de-DE", 
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
     const duration = formatDuration(t.duration);
     const avg = t.avgPulse ?? 0;
 
