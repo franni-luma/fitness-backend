@@ -140,6 +140,48 @@ h1 {
   height: 220px !important;
 }
 
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.historyTable th {
+  text-align: left;
+  padding: 8px;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.historyTable td {
+  padding: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.historyTable tr:hover {
+  background: rgba(60,198,255,0.08);
+}
+
+.avatar {
+  width: 100px;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.wave {
+  animation: wave 0.6s ease;
+}
+
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+
+
 @media (max-width: 768px) {
 
   h1 {
@@ -358,7 +400,7 @@ h1 {
 
   <div id="historySection" style="display:none;">
     <div class="card" style="text-align:center;">
-      <img src="avatar.png" style="width:100px; border-radius:50%;">
+      <img src="avatar.png" id="avatar" class="avatar">
       <h3>Franziska</h3>
     </div>
 
@@ -369,9 +411,17 @@ h1 {
 
     <div class="card">
       <h3>Letzte Trainings</h3>
-      <div id="historyList"></div>
+      <table class="historyTable">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Dauer</th>
+            <th>Ø Puls</th>
+          </tr>
+        </thead>
+        <tbody id="historyList"></tbody>
+      </table>
     </div>
-
   </div>
 
 </div>
@@ -463,6 +513,11 @@ function switchTab(tab) {
     document.getElementById("historySection").style.display = "block";
     document.getElementById("tabHistory").classList.add("active");
     loadHistory();
+
+    const avatar = document.getElementById("avatar");
+    avatar.classList.remove("wave");
+    void avatar.offsetWidth; 
+    avatar.classList.add("wave");
   }
 }
 
@@ -858,7 +913,7 @@ function toggleTraining() {
     trainings.push({
       date: new Date().toISOString(),
       duration: duration,
-      avgPulse: Math.round(pulseSum / pulseCount)
+      avgPulse: pulseCount > 0 ? Math.round(pulseSum / pulseCount) : 0
     });
 
     localStorage.setItem("trainings", JSON.stringify(trainings));
@@ -1029,30 +1084,42 @@ function startTimer() {
   
 }
 
-function loadHistory() {
+function formatDuration(seconds) {
+  const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
 
+function loadHistory() {
   const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
 
-  // Letzte Trainings anzeigen
+  // Tabelle füllen
   const list = document.getElementById("historyList");
 
-  list.innerHTML = trainings.slice(-5).reverse().map(t => {
+  list.innerHTML = trainings.slice().reverse().map(t => {
     const date = new Date(t.date).toLocaleDateString("de-DE");
-    const min = Math.floor(t.duration / 60);
-    return `<div style="margin:5px 0;">
-      ${date} – ${min} min – Ø ${t.avgPulse} bpm
-    </div>`;
+    const duration = formatDuration(t.duration);
+    const avg = t.avgPulse ?? 0;
+
+    return `
+      <tr>
+        <td>${date}</td>
+        <td>${duration}</td>
+        <td>${avg} bpm</td>
+      </tr>
+    `;
   }).join("");
 
-  // Wochen-Daten berechnen
+  // Wochen-Daten berechnen (in Minuten oder Sekunden - du nutzt aktuell Minuten)
   const days = ["Mo","Di","Mi","Do","Fr","Sa","So"];
   let weeklyData = [0,0,0,0,0,0,0];
 
   trainings.forEach(t => {
     const d = new Date(t.date);
-    let day = d.getDay(); 
-    day = day === 0 ? 6 : day - 1; // Sonntag korrekt verschieben
-    weeklyData[day] += Math.floor(t.duration / 60);
+    let day = d.getDay();
+    day = day === 0 ? 6 : day - 1;
+    weeklyData[day] += Math.floor(t.duration / 60); // Minuten
   });
 
   if (!weeklyChart) {
@@ -1067,9 +1134,7 @@ function loadHistory() {
       },
       options: {
         plugins: { legend: { display:false } },
-        scales: {
-          y: { beginAtZero:true }
-        }
+        scales: { y: { beginAtZero:true } }
       }
     });
   } else {
