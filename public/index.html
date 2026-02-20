@@ -103,7 +103,7 @@ h1 {
   flex: 1;
 }
 
-.zoneTopRow {
+.twocard {
   display: flex;
   gap: 30px;
 }
@@ -113,7 +113,7 @@ h1 {
 }
 
 .zoneLeft {
-  flex: 0 0 200px;
+  flex: 0 0 300px;
   font-size: 15px;
   line-height: 1.8;
 }
@@ -519,7 +519,7 @@ h1 {
 
   <div id="zoneSection" style="display:none;">
 
-    <div class="zoneTopRow">
+    <div class="twocard">
 
       <div class="card flex">
         <div class="stat">
@@ -586,28 +586,30 @@ h1 {
       </div>
     </div>
 
-    <div class="card zoneLayout">
+    <div class="twocard">
+      <div class="card zoneLayout">
 
-      <div class="zoneLeft">
-        <h3>Zeit in den Herzfrequenzzonen</h3>
-        <div id="zoneTimes"></div>
+        <div class="zoneLeft">
+          <h3>Zeit in den Herzfrequenzzonen</h3>
+          <div id="zoneTimes"></div>
+        </div>
+
+        <div class="zoneRight">
+          <canvas id="zoneChart"></canvas>
+        </div>
+
       </div>
 
-      <div class="zoneRight">
-        <canvas id="zoneChart"></canvas>
+      <div class="card">
+        <h3>Erklärung der Herzfrequenzzonen:</h3>
+        <ul>
+          <li><span class="value">50–60%</span> Gesundheitszone: Förderung der Gesundheit</li>
+          <li><span class="value">60–70%</span> Fettverbrennung: Aktivierung es Fettstoffwechsels/ Verbesserung der Grundlagenausdauer</li>
+          <li><span class="value">70–80%</span> Aerob: Steigerung der Ausdauerleistungsfähigkeit</li>
+          <li><span class="value">80–90%</span> Anaerob: Verbessung der Laktattoleranz/ Training für maximalen Leistungszuwachs</li>
+          <li><span class="value">90–100%</span> Extrem: Verbesserung der maximale Leistung und Geschwindigkeit</li>
+        </ul>
       </div>
-
-    </div>
-
-    <div class="card">
-      <h3>Erklärung der Herzfrequenzzonen:</h3>
-      <ul>
-        <li><span class="value">50–60%</span> Gesundheitszone: Förderung der Gesundheit</li>
-        <li><span class="value">60–70%</span> Fettverbrennung: Aktivierung es Fettstoffwechsels/ Verbesserung der Grundlagenausdauer</li>
-        <li><span class="value">70–80%</span> Aerob: Steigerung der Ausdauerleistungsfähigkeit</li>
-        <li><span class="value">80–90%</span> Anaerob: Verbessung der Laktattoleranz/ Training für maximalen Leistungszuwachs</li>
-        <li><span class="value">90–100%</span> Extrem: Verbesserung der maximale Leistung und Geschwindigkeit</li>
-      </ul>
     </div>
   </div>
 
