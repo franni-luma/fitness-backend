@@ -391,8 +391,48 @@ h1 {
     opacity: 0.6;
   }
 
+  .heroAvatar {
+    width: 120px;
+  }
+
+  .heroGlow {
+    width: 200px;
+    height: 200px;
+  }
+
   .historyTopRow {
     grid-template-columns: 1fr;
+  }
+  /* Trainingshistorie Mobile  */
+  .historyTable {
+    font-size: 12px;
+  }
+
+  .historyTable th,
+  .historyTable td {
+    padding: 6px;
+    white-space: normal; 
+  }
+
+  .historyTable th:nth-child(1),
+  .historyTable td:nth-child(1) {
+    width: 45%;
+  }
+
+  .historyTable th:nth-child(2),
+  .historyTable td:nth-child(2),
+  .historyTable th:nth-child(3),
+  .historyTable td:nth-child(3) {
+    width: auto;
+  }
+
+  .historyTableCard {
+    overflow-x: auto;
+  }
+
+  #weeklyChart {
+    width: 100% !important;
+    height: 250px !important;
   }
 }
 
