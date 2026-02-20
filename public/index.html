@@ -311,6 +311,27 @@ h1 {
   width: 30%;
 }
 
+.medalButton {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(145deg, #3cc6ff, #1a3147);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  z-index: 999;
+}
+
+.medalButton:hover {
+  transform: scale(1.1) rotate(10deg);
+}
+
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(15deg); }
@@ -462,6 +483,10 @@ h1 {
 
   <h1>Hallo Franziska & Lukas 👋</h1>
 
+  <button class="medalButton" onclick="toggleMedalMode()">
+    🏅
+  </button>
+
   <div class="card">
     <div class="buttons">
       <div class="button active" onclick="switchTab('vital')" id="tabVital">
@@ -474,6 +499,14 @@ h1 {
         Trainingshistorie
       </div>
     </div>
+  </div>
+
+  <div id="medalSection" style="display:none;">
+    <div class="card">
+      <h2>🏅 Deine Erfolge</h2>
+      <p>Hier kommen später deine Medaillen rein.</p>
+    </div>
+
   </div>
 
   <div id="vitalSection">
@@ -652,10 +685,11 @@ h1 {
 
 </div>
 <script>
+let medalMode = false;
+
 let pulseChart;
 let spo2Chart;
 let currentHours = 1;
-
 
 let trainingActive = false;
 let zoneCounters = {
@@ -672,7 +706,6 @@ let lastPulseValue = null;
 let pulseSum = 0;
 let pulseCount = 0;
 let calculatedZones = null;
-
 
 let weeklyChart;
 let currentPage = 1;
@@ -716,6 +749,26 @@ function setRange(hours, el) {
   el.classList.add("active");
 
   loadData();
+}
+
+function toggleMedalMode() {
+
+  medalMode = !medalMode;
+
+  const vital = document.getElementById("vitalSection");
+  const zones = document.getElementById("zoneSection");
+  const history = document.getElementById("historySection");
+  const medal = document.getElementById("medalSection");
+
+  if (medalMode) {
+    vital.style.display = "none";
+    zones.style.display = "none";
+    history.style.display = "none";
+    medal.style.display = "block";
+  } else {
+    medal.style.display = "none";
+    vital.style.display = "block";
+  }
 }
 
 function switchTab(tab) {
