@@ -346,6 +346,46 @@ h1 {
   transform: translateY(-50%) scale(1.1) rotate(10deg);
 }
 
+.medalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.medalItem {
+  background: #1a3147;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  opacity: 0.3;
+  transition: 0.3s ease;
+  transform: scale(1);
+}
+
+.medalItem.unlocked {
+  opacity: 1;
+  background: linear-gradient(145deg, gold, orange);
+  color: black;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255,215,0,0.4);
+}
+
+.medalIcon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.medalTitle {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.medalDesc {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(15deg); }
@@ -513,45 +553,6 @@ h1 {
     transform: translateY(-50%);
   }
 
-  .medalGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-    margin-top: 25px;
-  }
-
-  .medalItem {
-    background: #1a3147;
-    border-radius: 20px;
-    padding: 20px;
-    text-align: center;
-    opacity: 0.3;
-    transition: 0.3s ease;
-    transform: scale(1);
-  }
-
-  .medalItem.unlocked {
-    opacity: 1;
-    background: linear-gradient(145deg, gold, orange);
-    color: black;
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(255,215,0,0.4);
-  }
-
-  .medalIcon {
-    font-size: 40px;
-    margin-bottom: 10px;
-  }
-
-  .medalTitle {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  .medalDesc {
-    font-size: 12px;
-    opacity: 0.8;
-  }
 }
 
 </style>
@@ -875,7 +876,7 @@ function toggleMedalMode() {
     tabs.style.display = "none";
     medal.style.display = "block";
     btn.classList.add("activeMedal"); 
-    
+
     checkMedals(); 
 
   } else {
