@@ -325,7 +325,7 @@ h1 {
   cursor: pointer;
   box-shadow: 0 8px 25px rgba(0,0,0,0.4);
   transition: 0.3s ease;
-  z-index: 999;
+  z-index: 9999; 
 }
 
 .medalButton:hover {
@@ -479,15 +479,13 @@ h1 {
 
 <body>
 
+<button class="medalButton" onclick="toggleMedalMode()">🏅</button>
+
 <div class="container">
 
   <h1>Hallo Franziska & Lukas 👋</h1>
 
-  <button class="medalButton" onclick="toggleMedalMode()">
-    🏅
-  </button>
-
-  <div class="card">
+  <div class="card" id="mainTabs">
     <div class="buttons">
       <div class="button active" onclick="switchTab('vital')" id="tabVital">
         Vitaldaten
@@ -759,18 +757,20 @@ function toggleMedalMode() {
   const zones = document.getElementById("zoneSection");
   const history = document.getElementById("historySection");
   const medal = document.getElementById("medalSection");
+  const tabs = document.getElementById("mainTabs");
 
   if (medalMode) {
     vital.style.display = "none";
     zones.style.display = "none";
     history.style.display = "none";
+    tabs.style.display = "none";
     medal.style.display = "block";
   } else {
     medal.style.display = "none";
+    tabs.style.display = "block";
     vital.style.display = "block";
   }
 }
-
 function switchTab(tab) {
 
   document.getElementById("tabVital").classList.remove("active");
@@ -1514,6 +1514,7 @@ function loadHistory() {
     weeklyChart.update();
   }
 }
+
 function nextPage() {
   currentPage++;
   loadHistory();
