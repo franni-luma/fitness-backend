@@ -337,6 +337,10 @@ h1 {
   box-shadow: 0 8px 25px rgba(0,0,0,0.4);
   transition: 0.3s ease;
 }
+.medalButton.activeMedal {
+  transform: translateY(-50%) scale(1.2);
+  background: linear-gradient(145deg, gold, orange);
+}
 
 .medalButton:hover {
   transform: translateY(-50%) scale(1.1) rotate(10deg);
@@ -788,6 +792,7 @@ function toggleMedalMode() {
   const history = document.getElementById("historySection");
   const medal = document.getElementById("medalSection");
   const tabs = document.getElementById("mainTabs");
+  const btn = document.querySelector(".medalButton");
 
   if (medalMode) {
     vital.style.display = "none";
@@ -795,12 +800,17 @@ function toggleMedalMode() {
     history.style.display = "none";
     tabs.style.display = "none";
     medal.style.display = "block";
+
+    btn.classList.add("activeMedal");   // ← größer machen
   } else {
     medal.style.display = "none";
     tabs.style.display = "block";
     vital.style.display = "block";
+
+    btn.classList.remove("activeMedal"); // ← wieder normal
   }
 }
+
 function switchTab(tab) {
 
   document.getElementById("tabVital").classList.remove("active");
