@@ -1811,8 +1811,14 @@ function calculateBestStats() {
 
   // 🔥 Längste Zone 
   const bestZoneEver = calculateBestZoneEver();
-
-  document.getElementById("bestZone").innerText = bestZoneEver.name + " (" + Math.floor(bestZoneEver.seconds/60) + " min)";
+  if (bestZoneEver.seconds > 0) {
+    document.getElementById("bestZone").innerText =
+      bestZoneEver.name + " (" + 
+      bestZoneEver.seconds + " s)";
+  } else {
+    document.getElementById("bestZone").innerText =
+      "Noch keine Zonen-Daten";
+  }
 }
 
 function calculateBestZoneEver() {
