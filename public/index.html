@@ -614,6 +614,75 @@ h1 {
 
       </div>
     </div>
+
+    <div class="card">
+      <h2>🔥 Trainings-Streak</h2>
+
+      <div class="medalGrid">
+
+        <div class="medalItem" id="streak1">
+          <div class="medalIcon">🥉</div>
+          <div class="medalTitle">1 Tag</div>
+        </div>
+
+        <div class="medalItem" id="streak2">
+          <div class="medalIcon">🥈</div>
+          <div class="medalTitle">2 Tage</div>
+        </div>
+
+        <div class="medalItem" id="streak3">
+          <div class="medalIcon">🥇</div>
+          <div class="medalTitle">3 Tage</div>
+        </div>
+
+        <div class="medalItem" id="streak4">
+          <div class="medalIcon">🔥</div>
+          <div class="medalTitle">4 Tage</div>
+        </div>
+
+        <div class="medalItem" id="streak5">
+          <div class="medalIcon">💎</div>
+          <div class="medalTitle">5 Tage</div>
+        </div>
+
+        <div class="medalItem" id="streak6">
+          <div class="medalIcon">⚡</div>
+          <div class="medalTitle">6 Tage</div>
+        </div>
+
+        <div class="medalItem" id="streak7">
+          <div class="medalIcon">👑</div>
+          <div class="medalTitle">7 Tage</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🏆 Bestleistungen</h2>
+
+      <div class="medalGrid">
+
+        <div class="medalItem unlocked">
+          <div class="medalIcon">⏱️</div>
+          <div class="medalTitle">Längstes Training</div>
+          <div class="medalDesc" id="bestDuration">--</div>
+        </div>
+
+        <div class="medalItem unlocked">
+          <div class="medalIcon">📅</div>
+          <div class="medalTitle">Meiste Trainings (Monat)</div>
+          <div class="medalDesc" id="bestMonth">--</div>
+        </div>
+
+        <div class="medalItem unlocked">
+          <div class="medalIcon">🔥</div>
+          <div class="medalTitle">Längste Zone</div>
+          <div class="medalDesc" id="bestZone">--</div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <div id="vitalSection">
@@ -877,7 +946,8 @@ function toggleMedalMode() {
     medal.style.display = "block";
     btn.classList.add("activeMedal"); 
 
-    checkMedals(); 
+    checkMedals();
+    calculateBestStats();
 
   } else {
     medal.style.display = "none";
@@ -1649,25 +1719,93 @@ function checkMedals() {
   const totalTrainings = trainings.length;
   const totalSeconds = trainings.reduce((sum, t) => sum + t.duration, 0);
 
-  // 1️⃣ Erstes Training
+  // Erstes Training
   if (totalTrainings >= 1) {
     document.getElementById("medalFirstTraining").classList.add("unlocked");
   }
 
-  // 2️⃣ 1 Stunde Gesamt
+  // 1 Stunde Gesamt
   if (totalSeconds >= 3600) {
     document.getElementById("medal1Hour").classList.add("unlocked");
   }
 
-  // 3️⃣ 5 Trainings
+  // 5 Trainings
   if (totalTrainings >= 5) {
     document.getElementById("medal5Trainings").classList.add("unlocked");
   }
 
-  // 4️⃣ 10 Minuten Aerob-Zone
+  // 10 Minuten Aerob-Zone
   if (zoneCounters.aerobic >= 600) {
     document.getElementById("medalZoneMaster").classList.add("unlocked");
   }
+
+  // Trainings-Streak prüfen
+  const streak = calculateStreak();
+
+  for (let i = 1; i <= 7; i++) {
+    if (streak >= i) {
+      document.getElementById("streak"+i).classList.add("unlocked");
+    }
+  }
+}
+
+function calculateStreak() {
+
+  const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
+  if (trainings.length === 0) return 0;
+
+  const dates = trainings
+    .map(t => new Date(t.date).toDateString())
+    .sort((a,b)=> new Date(b) - new Date(a));
+
+  let streak = 1;
+
+  for (let i = 1; i < dates.length; i++) {
+
+    const current = new Date(dates[i-1]);
+    const previous = new Date(dates[i]);
+
+    const diff = (current - previous) / (1000*60*60*24);
+
+    if (diff === 1) {
+      streak++;
+    } else if (diff > 1) {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+function calculateBestStats() {
+
+  const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
+  if (trainings.length === 0) return;
+
+  // 🥇 Längstes Training
+  const longest = Math.max(...trainings.map(t => t.duration));
+  document.getElementById("bestDuration").innerText =
+    formatDuration(longest);
+
+  // 📅 Meiste Trainings in 1 Monat
+  let monthCount = {};
+
+  trainings.forEach(t => {
+    const d = new Date(t.date);
+    const key = d.getFullYear() + "-" + (d.getMonth()+1);
+    monthCount[key] = (monthCount[key] || 0) + 1;
+  });
+
+  const maxMonth = Math.max(...Object.values(monthCount));
+  document.getElementById("bestMonth").innerText =
+    maxMonth + " Trainings";
+
+  // 🔥 Längste Zone
+  const zones = zoneCounters;
+  const bestZone = Object.keys(zones).reduce((a,b)=> zones[a]>zones[b]?a:b);
+
+  document.getElementById("bestZone").innerText =
+    bestZone + " (" + Math.floor(zones[bestZone]/60) + " min)";
 }
 
 loadLiveValues();
