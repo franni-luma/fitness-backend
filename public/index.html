@@ -1825,31 +1825,31 @@ function calculateBestZoneEver() {
 
   const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
 
-  let zoneTotals = {
-    health: 0,
-    fat: 0,
-    aerobic: 0,
-    anaerobic: 0,
-    extreme: 0
-  };
+  let bestZone = null;
+  let maxSeconds = 0;
 
   trainings.forEach(t => {
-    if (t.zones) {
-      for (let key in t.zones) {
-        zoneTotals[key] += t.zones[key];
+
+    if (!t.zones) return;
+
+    Object.keys(t.zones).forEach(zone => {
+
+      const seconds = t.zones[zone] || 0;
+
+      if (seconds > maxSeconds) {
+        maxSeconds = seconds;
+        bestZone = zone;
       }
-    }
+
+    });
+
   });
 
-  const bestZone = Object.keys(zoneTotals)
-    .reduce((a,b)=> zoneTotals[a]>zoneTotals[b]?a:b);
-
   return {
-    name: bestZone,
-    seconds: zoneTotals[bestZone]
+    name: bestZone || "Keine Daten",
+    seconds: maxSeconds
   };
 }
-
 loadLiveValues();
 loadData();
 
