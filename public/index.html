@@ -510,7 +510,7 @@ h1 {
   }
 
   .medalButton:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform: none;
   }
 }
 
@@ -809,13 +809,13 @@ function toggleMedalMode() {
     tabs.style.display = "none";
     medal.style.display = "block";
 
-    btn.classList.add("activeMedal");   // ← größer machen
+    btn.classList.add("activeMedal");  
   } else {
     medal.style.display = "none";
     tabs.style.display = "block";
     vital.style.display = "block";
 
-    btn.classList.remove("activeMedal"); // ← wieder normal
+    btn.classList.remove("activeMedal"); 
   }
 }
 
