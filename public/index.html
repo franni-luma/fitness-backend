@@ -103,6 +103,15 @@ h1 {
   flex: 1;
 }
 
+.zoneTopRow {
+  display: flex;
+  gap: 30px;
+}
+
+.zoneTopRow .card {
+  flex: 1;
+}
+
 .zoneLeft {
   flex: 0 0 600px;
   font-size: 15px;
@@ -138,7 +147,7 @@ h1 {
 
 .zoneRight {
   width: 220px;
-  margin-left: 150px;
+  margin-left: 40px;
 }
 
 .zoneRight canvas {
@@ -303,8 +312,6 @@ h1 {
   width: 30%;
 }
 
-
-
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(15deg); }
@@ -358,13 +365,23 @@ h1 {
     gap: 15px;
   }
 
+  .zoneTopRow {
+    flex-direction: column;
+  }
+
   .zoneLayout {
     flex-direction: column;
     align-items: center;
+    gap: 20px;
   }
 
   .zoneRight {
     margin-top: 20px;
+    margin-left: 0px;
+  }
+  .zoneLeft {
+    flex: unset;   
+    width: 100%;
   }
 
   .zoneRight canvas {
@@ -502,39 +519,42 @@ h1 {
 
   <div id="zoneSection" style="display:none;">
 
-    <div class="card flex">
-      <div class="stat">
-        <div>Puls</div>
-        <h2 id="zonepulsevalue">--</h2>
-        <div id="zonepulsetime"></div>
-        <div class="small">bpm</div>
+    <div class="zoneTopRow">
+
+      <div class="card flex">
+        <div class="stat">
+          <div>Puls</div>
+          <h2 id="zonepulsevalue">--</h2>
+          <div id="zonepulsetime"></div>
+          <div class="small">bpm</div>
+        </div>
+
+        <div class="stat">
+          <div>SpO₂</div>
+          <h2 id="zonespo2value">--</h2>
+          <div id="zonespo2time"></div>
+          <div class="small">%</div>
+        </div>
       </div>
 
-      <div class="stat">
-        <div>SpO₂</div>
-        <h2 id="zonespo2value">--</h2>
-        <div id="zonespo2time"></div>
-        <div class="small">%</div>
-      </div>
-    </div>
+      <div class="card flex">
+        <div class="stat">
+          <div>Alter</div>
+          <input 
+            type="number" 
+            id="ageInput" 
+            min="1" 
+            max="120" 
+            placeholder="Alter eingeben"
+            oninput="updateMaxPulse()"
+            style="width:80px; padding:8px; border-radius:10px; border:none; text-align:center; font-size:18px;"
+          >
+        </div>
 
-    <div class="card flex">
-      <div class="stat">
-        <div>Alter</div>
-        <input 
-          type="number" 
-          id="ageInput" 
-          min="1" 
-          max="120" 
-          placeholder="Alter eingeben"
-          oninput="updateMaxPulse()"
-          style="width:80px; padding:8px; border-radius:10px; border:none; text-align:center; font-size:18px;"
-        >
-      </div>
-
-      <div class="stat">
-        <div>Maximalpuls</div>
-        <h2 id="maxPulse">-- bpm</h2>
+        <div class="stat">
+          <div>Maximalpuls</div>
+          <h2 id="maxPulse">-- bpm</h2>
+        </div>
       </div>
     </div>
 
