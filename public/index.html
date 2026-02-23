@@ -869,11 +869,11 @@ let currentHours = 1;
 
 let trainingActive = false;
 let zoneCounters = {
-  health: 0,
-  fat: 0,
-  aerobic: 0,
-  anaerobic: 0,
-  extreme: 0
+  Gesundheitszone: 0,
+  Fettverbrennung: 0,
+  Aerob: 0,
+  Anaerob: 0,
+  Extrem: 0
 };
 let trainingStartTime = null;
 let timerInterval = null;
@@ -1239,11 +1239,11 @@ function calculateZones() {
   const maxHF = 220 - age;
 
   const zones = {
-    health:   [0.50, 0.60],
-    fat:      [0.60, 0.70],
-    aerobic:  [0.70, 0.80],
-    anaerobic:[0.80, 0.90],
-    extreme:  [0.90, 1.00]
+    Gesundheitszone:   [0.50, 0.60],
+    Fettverbrennung:      [0.60, 0.70],
+    Aerob:  [0.70, 0.80],
+    Anaerob:[0.80, 0.90],
+    Extrem:  [0.90, 1.00]
   };
 
   const result = {};
@@ -1267,7 +1267,7 @@ function displayZoneRanges(zones) {
         <div class="zoneDot" style="background:#ff0000"></div>
         Extrem
       </div>
-      <div>${zones.extreme[0]} - ${zones.extreme[1]} bpm</div>
+      <div>${zones.Extrem[0]} - ${zones.Extrem[1]} bpm</div>
     </div>
 
     <div class="zoneRangeItem">
@@ -1275,7 +1275,7 @@ function displayZoneRanges(zones) {
         <div class="zoneDot" style="background:#ff8800"></div>
         Anaerob
       </div>
-      <div>${zones.anaerobic[0]} - ${zones.anaerobic[1]} bpm</div>
+      <div>${zones.Anaerob[0]} - ${zones.Anaerob[1]} bpm</div>
     </div>
 
     <div class="zoneRangeItem">
@@ -1283,7 +1283,7 @@ function displayZoneRanges(zones) {
         <div class="zoneDot" style="background:#00cc66"></div>
         Aerob
       </div>
-      <div>${zones.aerobic[0]} - ${zones.aerobic[1]} bpm</div>
+      <div>${zones.Aerob[0]} - ${zones.Aerob[1]} bpm</div>
     </div>
 
     <div class="zoneRangeItem">
@@ -1291,7 +1291,7 @@ function displayZoneRanges(zones) {
         <div class="zoneDot" style="background:#3cc6ff"></div>
         Fettverbrennung
       </div>
-      <div>${zones.fat[0]} - ${zones.fat[1]} bpm</div>
+      <div>${zones.Fettverbrennung[0]} - ${zones.Fettverbrennung[1]} bpm</div>
     </div>
 
     <div class="zoneRangeItem">
@@ -1299,7 +1299,7 @@ function displayZoneRanges(zones) {
         <div class="zoneDot" style="background:#8888ff"></div>
         Gesundheit
       </div>
-      <div>${zones.health[0]} - ${zones.health[1]} bpm</div>
+      <div>${zones.Gesundheitszone[0]} - ${zones.Gesundheitszone[1]} bpm</div>
     </div>
   `;
 }
@@ -1328,11 +1328,11 @@ function toggleTraining() {
     document.getElementById("trainingStatus").innerText = "Training läuft...";
 
     zoneCounters = {
-      health: 0,
-      fat: 0,
-      aerobic: 0,
-      anaerobic: 0,
-      extreme: 0
+      Gesundheitszone: 0,
+      Fettverbrennung: 0,
+      Aerob: 0,
+      Anaerob: 0,
+      Extrem: 0
     };
 
     pulseSum = 0;
@@ -1386,11 +1386,11 @@ function toggleTraining() {
       duration: duration,
       avgPulse: pulseCount > 0 ? Math.round(pulseSum / pulseCount) : 0,
       zones: {
-        health: zoneCounters.health,
-        fat: zoneCounters.fat,
-        aerobic: zoneCounters.aerobic,
-        anaerobic: zoneCounters.anaerobic,
-        extreme: zoneCounters.extreme
+        Gesundheitszone: zoneCounters.Gesundheitszone,
+        Fettverbrennung: zoneCounters.Fettverbrennung,
+        Aerob: zoneCounters.Aerob,
+        Anaerob: zoneCounters.Anaerob,
+        Extrem: zoneCounters.Extrem
       }
     });
 
@@ -1411,23 +1411,23 @@ function calculateZone(currentPulse) {
   let zoneName = "";
 
   if (percent >= 90) {
-    zoneCounters.extreme += 1;
+    zoneCounters.Extrem += 1;
     zoneName = "Extrem";
   } 
   else if (percent >= 80) {
-    zoneCounters.anaerobic += 1;
+    zoneCounters.Anaerob += 1;
     zoneName = "Anaerob";
   } 
   else if (percent >= 70) {
-    zoneCounters.aerobic += 1;
+    zoneCounters.Aerob += 1;
     zoneName = "Aerob";
   } 
   else if (percent >= 60) {
-    zoneCounters.fat += 1;
+    zoneCounters.Fettverbrennung += 1;
     zoneName = "Fettverbrennung";
   } 
   else if (percent >= 50) {
-    zoneCounters.health += 1;
+    zoneCounters.Gesundheitszone += 1;
     zoneName = "Gesundheitszone";
   } 
   else {
@@ -1457,10 +1457,10 @@ function updateZoneDisplay() {
       ● Extrem
     </div>
     <div class="zoneTime">
-      ${formatTime(zoneCounters.extreme)}
+      ${formatTime(zoneCounters.Extrem)}
     </div>
     <div class="zoneRange">
-      (${calculatedZones.extreme[0]}–${calculatedZones.extreme[1]} bpm)
+      (${calculatedZones.Extrem[0]}–${calculatedZones.Extrem[1]} bpm)
     </div>
   </div>
 
@@ -1469,10 +1469,10 @@ function updateZoneDisplay() {
       ● Anaerob
     </div>
     <div class="zoneTime">
-      ${formatTime(zoneCounters.anaerobic)}
+      ${formatTime(zoneCounters.Anaerob)}
     </div>
     <div class="zoneRange">
-      (${calculatedZones.anaerobic[0]}–${calculatedZones.anaerobic[1]} bpm)
+      (${calculatedZones.Anaerob[0]}–${calculatedZones.Anaerob[1]} bpm)
     </div>
   </div>
 
@@ -1481,10 +1481,10 @@ function updateZoneDisplay() {
       ● Aerob
     </div>
     <div class="zoneTime">
-      ${formatTime(zoneCounters.aerobic)}
+      ${formatTime(zoneCounters.Aerob)}
     </div>
     <div class="zoneRange">
-      (${calculatedZones.aerobic[0]}–${calculatedZones.aerobic[1]} bpm)
+      (${calculatedZones.Aerob[0]}–${calculatedZones.Aerob[1]} bpm)
     </div>
   </div>
 
@@ -1493,10 +1493,10 @@ function updateZoneDisplay() {
       ● Fettverbrennung
     </div>
     <div class="zoneTime">
-      ${formatTime(zoneCounters.fat)}
+      ${formatTime(zoneCounters.Fettverbrennung)}
     </div>
     <div class="zoneRange">
-      (${calculatedZones.fat[0]}–${calculatedZones.fat[1]} bpm)
+      (${calculatedZones.Fettverbrennung[0]}–${calculatedZones.Fettverbrennung[1]} bpm)
     </div>
   </div>
 
@@ -1505,29 +1505,29 @@ function updateZoneDisplay() {
       ● Gesundheit
     </div>
     <div class="zoneTime">
-      ${formatTime(zoneCounters.health)}
+      ${formatTime(zoneCounters.Gesundheit)}
     </div>
     <div class="zoneRange">
-      (${calculatedZones.health[0]}–${calculatedZones.health[1]} bpm)
+      (${calculatedZones.Gesundheit[0]}–${calculatedZones.Gesundheit[1]} bpm)
     </div>
   </div>
   `;
 
   if (zoneChart) {
     const total =
-      zoneCounters.extreme +
-      zoneCounters.anaerobic +
-      zoneCounters.aerobic +
-      zoneCounters.fat +
-      zoneCounters.health;
+      zoneCounters.Extrem +
+      zoneCounters.Anaerob +
+      zoneCounters.Aerob +
+      zoneCounters.Fettverbrennung +
+      zoneCounters.Gesundheit;
 
     if (total > 0) {
       zoneChart.data.datasets[0].data = [
-        (zoneCounters.extreme / total) * 100,
-        (zoneCounters.anaerobic / total) * 100,
-        (zoneCounters.aerobic / total) * 100,
-        (zoneCounters.fat / total) * 100,
-        (zoneCounters.health / total) * 100
+        (zoneCounters.Extrem / total) * 100,
+        (zoneCounters.Anaerob / total) * 100,
+        (zoneCounters.Aerob / total) * 100,
+        (zoneCounters.Fettverbrennung / total) * 100,
+        (zoneCounters.Gesundheitszone / total) * 100
       ];
     }
 
