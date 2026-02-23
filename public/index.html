@@ -1746,12 +1746,31 @@ function loadHistory() {
   let weeklyData = [0,0,0,0,0,0,0];
   let weeklyCount = [0,0,0,0,0,0,0]; 
 
+  // Aktuelle Woche berechnen (Montag als Start)
+  const now = new Date();
+  const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay(); 
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - dayOfWeek + 1);
+  monday.setHours(0,0,0,0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23,59,59,999);
+
   trainings.forEach(t => {
+
     const d = new Date(t.date);
-    let day = d.getDay();
-    day = day === 0 ? 6 : day - 1;
-    weeklyData[day] += t.duration;
-    weeklyCount[day] += 1;
+
+    // Nur Trainings dieser Woche berücksichtigen
+    if (d >= monday && d <= sunday) {
+
+      let day = d.getDay();
+      day = day === 0 ? 6 : day - 1;
+
+      weeklyData[day] += t.duration;
+      weeklyCount[day] += 1;
+    }
+
   });
 
   if (!weeklyChart) {
@@ -1864,6 +1883,7 @@ function checkMedals() {
   // 10 Minuten Aerob-Zone
   if (zoneCounters.Aerob >= 600) {
     document.getElementById("medalZoneMaster").classList.add("unlocked");
+    showMedalPopup("medalZoneMaster", "Du hast 10 Minuten in der Aerob - Zone trainiert!", "🔥");
   }
 
   // Trainings-Streak prüfen
@@ -1908,7 +1928,7 @@ function calculateBestStats() {
 
   const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
 
-  // Reset (wichtig!)
+  // Reset
   document.getElementById("bestDurationMedal").classList.remove("unlocked");
   document.getElementById("bestMonthMedal").classList.remove("unlocked");
   document.getElementById("bestZoneMedal").classList.remove("unlocked");
@@ -1922,10 +1942,9 @@ function calculateBestStats() {
 
   // Längstes Training
   const longest = Math.max(...trainings.map(t => t.duration));
-  document.getElementById("bestDuration").innerText =
-    formatDuration(longest);
-
+  document.getElementById("bestDuration").innerText = formatDuration(longest);
   document.getElementById("bestDurationMedal").classList.add("unlocked");
+  showMedalPopup("bestDurationMedal", "Du hast eine neu Bestzeit!", "🤩");
 
   // Meiste Trainings in 1 Monat
   let monthCount = {};
@@ -1945,6 +1964,7 @@ function calculateBestStats() {
   if (bestZoneEver.seconds > 0) {
     document.getElementById("bestZone").innerText = bestZoneEver.name + " (" + formatDuration(bestZoneEver.seconds) + ")";
     document.getElementById("bestZoneMedal").classList.add("unlocked");
+    showMedalPopup("bestZoneMedal", "Du hast eine neu Bestzeit!", "🤩");
   } else {
     document.getElementById("bestZone").innerText = "Noch keine Zonen-Daten";
   }
