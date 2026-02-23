@@ -1087,26 +1087,13 @@ async function loadData() {
 
   const res = await fetch(url);
   let data = await res.json();
-  console.log("=== RAW BACKEND DATA ===");
-  console.table(data);
 
   if (currentHours === 1) {
 
     const now = new Date();
     const cutoff = new Date(now.getTime() - 60 * 60 * 1000);
 
-    console.log("NOW:", now.toISOString());
-    console.log("CUTOFF:", cutoff.toISOString());
-
-    data.forEach(d => {
-      const t = new Date(d.time);
-      console.log(
-        "Data time:",
-        t.toISOString(),
-        "| In range:",
-        t >= cutoff && t <= now
-      );
-    });
+    data.forEach(d => {const t = new Date(d.time);});
 
     data = data
       .filter(d => {
@@ -1114,9 +1101,6 @@ async function loadData() {
         return t >= cutoff && t <= now;
       })
       .sort((a,b) => new Date(a.time) - new Date(b.time));
-
-    console.log("=== AFTER FILTER ===");
-    console.table(data);
   }
 
   let labels = [];
