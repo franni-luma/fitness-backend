@@ -1971,7 +1971,8 @@ function calculateBestStats() {
   });
 
   const maxMonth = Math.max(...Object.values(monthCount));
-  document.getElementById("bestMonth").innerText = maxMonth + " Trainings";
+  const text = maxMonth === 1 ? "1 Training" : maxMonth + " Trainings";
+  document.getElementById("bestMonth").innerText = text;
   document.getElementById("bestMonthMedal").classList.add("unlocked");
 
   // Längste Zone 
@@ -1988,7 +1989,8 @@ function calculateBestStats() {
   // Längste Trainingsstreak
   const longestStreak  = calculateLongestStreakEver();
   if (longestStreak  > 0) {
-    document.getElementById("besttrainingstreak").innerText = longestStreak + " Tage";
+    const text = longestStreak === 1 ? "1 Tag" : longestStreak + " Tage";
+    document.getElementById("besttrainingstreak").innerText = text;
     document.getElementById("besttrainingstreakMedal").classList.add("unlocked");
   } else {
     document.getElementById("besttrainingstreak").innerText = "--";
