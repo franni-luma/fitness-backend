@@ -720,7 +720,7 @@ h1 {
 
         <div class="medalItem" id="bestMonthMedal">
           <img src="images/meistentrainingsMonat.png" class="medalIcon">
-          <div class="medalTitle">Meiste Trainings (Monat)</div>
+          <div class="medalTitle">Anzahl an Trainings (Monat)</div>
           <div class="medalDesc" id="bestMonth">--</div>
         </div>
 
@@ -1970,10 +1970,26 @@ function calculateBestStats() {
     monthCount[key] = (monthCount[key] || 0) + 1;
   });
 
-  const maxMonth = Math.max(...Object.values(monthCount));
-  const text = maxMonth === 1 ? "1 Training" : maxMonth + " Trainings";
-  document.getElementById("bestMonth").innerText = text;
-  document.getElementById("bestMonthMedal").classList.add("unlocked");
+  let bestMonthKey = null;
+  let maxMonth = 0;
+
+  for (let key in monthCount) {
+    if (monthCount[key] > maxMonth) {
+      maxMonth = monthCount[key];
+      bestMonthKey = key;
+    }
+  }
+
+  if (bestMonthKey) {
+    const [year, month] = bestMonthKey.split("-");
+    const date = new Date(year, month - 1);
+
+    const monthName = date.toLocaleDateString("de-DE", {month: "long", year: "numeric"});
+
+    const text = maxMonth === 1 ? `1 Training im ${monthName}` : `${maxMonth} Trainings im ${monthName}`;
+    document.getElementById("bestMonth").innerText = text;
+    document.getElementById("bestMonthMedal").classList.add("unlocked");
+  }
 
   // Längste Zone 
   const bestZoneEver = calculateBestZoneEver();
