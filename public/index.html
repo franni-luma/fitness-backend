@@ -1744,7 +1744,7 @@ function checkMedals() {
   }
 
   // 10 Minuten Aerob-Zone
-  if (zoneCounters.aerobic >= 600) {
+  if (zoneCounters.Aerob >= 600) {
     document.getElementById("medalZoneMaster").classList.add("unlocked");
   }
 
@@ -1798,7 +1798,7 @@ function calculateBestStats() {
   if (trainings.length === 0) {
     document.getElementById("bestDuration").innerText = "--";
     document.getElementById("bestMonth").innerText = "--";
-    document.getElementById("bestZone").innerText = "Noch keine Daten";
+    document.getElementById("bestZone").innerText = "--";
     return;
   }
 
@@ -1865,6 +1865,7 @@ function calculateBestZoneEver() {
     seconds: maxSeconds
   };
 }
+
 loadLiveValues();
 loadData();
 
