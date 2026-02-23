@@ -1505,10 +1505,10 @@ function updateZoneDisplay() {
       ● Gesundheit
     </div>
     <div class="zoneTime">
-      ${formatTime(zoneCounters.Gesundheit)}
+      ${formatTime(zoneCounters.Gesundheitszone)}
     </div>
     <div class="zoneRange">
-      (${calculatedZones.Gesundheit[0]}–${calculatedZones.Gesundheit[1]} bpm)
+      (${calculatedZones.Gesundheitszone[0]}–${calculatedZones.Gesundheitszone[1]} bpm)
     </div>
   </div>
   `;
@@ -1519,7 +1519,7 @@ function updateZoneDisplay() {
       zoneCounters.Anaerob +
       zoneCounters.Aerob +
       zoneCounters.Fettverbrennung +
-      zoneCounters.Gesundheit;
+      zoneCounters.Gesundheitszone;
 
     if (total > 0) {
       zoneChart.data.datasets[0].data = [
