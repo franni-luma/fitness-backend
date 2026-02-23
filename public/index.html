@@ -386,6 +386,44 @@ h1 {
   opacity: 0.8;
 }
 
+.medalPopup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.medalPopup.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.popupContent {
+  background: linear-gradient(145deg, gold, orange);
+  padding: 40px;
+  border-radius: 25px;
+  text-align: center;
+  transform: scale(0.6);
+  transition: 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  color: black;
+}
+
+.medalPopup.show .popupContent {
+  transform: scale(1);
+}
+
+.popupIcon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(15deg); }
@@ -591,7 +629,9 @@ h1 {
         <div class="medalItem" id="medalFirstTraining">
           <div class="medalIcon">🥇</div>
           <div class="medalTitle">Erstes Training</div>
-          <div class="medalDesc">Starte dein erstes Training</div>
+          <div class="medalDesc" id="medalFirstTrainingDesc">
+            Starte dein erstes Training
+          </div>
         </div>
 
         <div class="medalItem" id="medal1Hour">
@@ -860,6 +900,15 @@ h1 {
   </div>
 
 </div>
+
+<div id="medalPopup" class="medalPopup">
+  <div class="popupContent">
+    <div id="popupIcon" class="popupIcon">🏅</div>
+    <h2>Neue Medaille!</h2>
+    <p id="popupText"></p>
+  </div>
+</div>
+
 <script>
 let medalMode = false;
 
@@ -1633,6 +1682,24 @@ function formatDuration(seconds) {
   return `${h}:${m}:${s}`;
 }
 
+function showMedalPopup(id, title, icon) {
+
+  const alreadyShown = localStorage.getItem("medalShown_" + id);
+  if (alreadyShown) return;
+
+  localStorage.setItem("medalShown_" + id, "true");
+
+  document.getElementById("popupIcon").innerText = icon;
+  document.getElementById("popupText").innerText = title;
+
+  const popup = document.getElementById("medalPopup");
+  popup.classList.add("show");
+
+  setTimeout(() => {
+    popup.classList.remove("show");
+  }, 2500);
+}
+
 function loadHistory() {
   const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
 
@@ -1770,18 +1837,28 @@ function checkMedals() {
   const totalSeconds = trainings.reduce((sum, t) => sum + t.duration, 0);
 
   // Erstes Training
+  const firstTrainingMedal = document.getElementById("medalFirstTraining");
+  const firstTrainingDesc = document.getElementById("medalFirstTrainingDesc");
+
   if (totalTrainings >= 1) {
-    document.getElementById("medalFirstTraining").classList.add("unlocked");
+    firstTrainingMedal.classList.add("unlocked");
+    firstTrainingDesc.innerText = "Du hast dein erstes Training absolviert!";
+    showMedalPopup("medalFirstTraining", "Erstes Training freigeschaltet!", "🥇");
+  } else {
+    firstTrainingMedal.classList.remove("unlocked");
+    firstTrainingDesc.innerText = "Starte dein erstes Training";
   }
 
   // 1 Stunde Gesamt
   if (totalSeconds >= 3600) {
     document.getElementById("medal1Hour").classList.add("unlocked");
+    showMedalPopup("medal1Hour", "1 Stunde Training erreicht!", "⏱️");
   }
 
   // 5 Trainings
   if (totalTrainings >= 5) {
     document.getElementById("medal5Trainings").classList.add("unlocked");
+    showMedalPopup("medal5Trainings", "5 Trainings abgeschlossen!", "🏆");
   }
 
   // 10 Minuten Aerob-Zone
@@ -1843,14 +1920,14 @@ function calculateBestStats() {
     return;
   }
 
-  // 🥇 Längstes Training
+  // Längstes Training
   const longest = Math.max(...trainings.map(t => t.duration));
   document.getElementById("bestDuration").innerText =
     formatDuration(longest);
 
   document.getElementById("bestDurationMedal").classList.add("unlocked");
 
-  // 📅 Meiste Trainings in 1 Monat
+  // Meiste Trainings in 1 Monat
   let monthCount = {};
   trainings.forEach(t => {
     const d = new Date(t.date);
@@ -1859,21 +1936,17 @@ function calculateBestStats() {
   });
 
   const maxMonth = Math.max(...Object.values(monthCount));
-  document.getElementById("bestMonth").innerText =
-    maxMonth + " Trainings";
-
+  document.getElementById("bestMonth").innerText = maxMonth + " Trainings";
   document.getElementById("bestMonthMedal").classList.add("unlocked");
 
-  // 🔥 Längste Zone 
+  // Längste Zone 
   const bestZoneEver = calculateBestZoneEver();
 
   if (bestZoneEver.seconds > 0) {
-    document.getElementById("bestZone").innerText =
-      bestZoneEver.name + " (" + bestZoneEver.seconds + " s)";
+    document.getElementById("bestZone").innerText = bestZoneEver.name + " (" + formatDuration(bestZoneEver.seconds) + ")";
     document.getElementById("bestZoneMedal").classList.add("unlocked");
   } else {
-    document.getElementById("bestZone").innerText =
-      "Noch keine Zonen-Daten";
+    document.getElementById("bestZone").innerText = "Noch keine Zonen-Daten";
   }
 }
 
