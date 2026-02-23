@@ -82,7 +82,7 @@ app.get("/vitals", async (req, res) => {
       SELECT *
       FROM vitals
       ORDER BY id DESC
-      LIMIT 200
+      LIMIT 900
     `);
 
     return res.json(result.rows);
