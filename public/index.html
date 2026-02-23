@@ -373,8 +373,16 @@ h1 {
 }
 
 .medalIcon {
-  font-size: 40px;
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
   margin-bottom: 10px;
+  transition: 0.3s ease;
+}
+
+.medalItem.unlocked .medalIcon {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px gold);
 }
 
 .medalTitle {
@@ -662,12 +670,12 @@ h1 {
       <div class="medalGrid">
 
         <div class="medalItem" id="streak1">
-          <div class="medalIcon">🥉</div>
+          <img src="images/streak1.png" class="medalIcon">
           <div class="medalTitle">1 Tag</div>
         </div>
 
         <div class="medalItem" id="streak2">
-          <div class="medalIcon">🥈</div>
+          <img src="images/streak2.png" class="medalIcon">
           <div class="medalTitle">2 Tage</div>
         </div>
 
