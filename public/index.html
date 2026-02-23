@@ -663,19 +663,19 @@ h1 {
 
       <div class="medalGrid">
 
-        <div class="medalItem unlocked">
+        <div class="medalItem" id="bestDurationMedal">
           <div class="medalIcon">⏱️</div>
           <div class="medalTitle">Längstes Training</div>
           <div class="medalDesc" id="bestDuration">--</div>
         </div>
 
-        <div class="medalItem unlocked">
+        <div class="medalItem" id="bestMonthMedal">
           <div class="medalIcon">📅</div>
           <div class="medalTitle">Meiste Trainings (Monat)</div>
           <div class="medalDesc" id="bestMonth">--</div>
         </div>
 
-        <div class="medalItem unlocked">
+        <div class="medalItem" id="bestZoneMedal">
           <div class="medalIcon">🔥</div>
           <div class="medalTitle">Längste Zone</div>
           <div class="medalDesc" id="bestZone">--</div>
@@ -1789,16 +1789,28 @@ function calculateStreak() {
 function calculateBestStats() {
 
   const trainings = JSON.parse(localStorage.getItem("trainings")) || [];
-  if (trainings.length === 0) return;
+
+  // Reset (wichtig!)
+  document.getElementById("bestDurationMedal").classList.remove("unlocked");
+  document.getElementById("bestMonthMedal").classList.remove("unlocked");
+  document.getElementById("bestZoneMedal").classList.remove("unlocked");
+
+  if (trainings.length === 0) {
+    document.getElementById("bestDuration").innerText = "--";
+    document.getElementById("bestMonth").innerText = "--";
+    document.getElementById("bestZone").innerText = "Noch keine Daten";
+    return;
+  }
 
   // 🥇 Längstes Training
   const longest = Math.max(...trainings.map(t => t.duration));
   document.getElementById("bestDuration").innerText =
     formatDuration(longest);
 
+  document.getElementById("bestDurationMedal").classList.add("unlocked");
+
   // 📅 Meiste Trainings in 1 Monat
   let monthCount = {};
-
   trainings.forEach(t => {
     const d = new Date(t.date);
     const key = d.getFullYear() + "-" + (d.getMonth()+1);
@@ -1809,12 +1821,15 @@ function calculateBestStats() {
   document.getElementById("bestMonth").innerText =
     maxMonth + " Trainings";
 
+  document.getElementById("bestMonthMedal").classList.add("unlocked");
+
   // 🔥 Längste Zone 
   const bestZoneEver = calculateBestZoneEver();
+
   if (bestZoneEver.seconds > 0) {
     document.getElementById("bestZone").innerText =
-      bestZoneEver.name + " (" + 
-      bestZoneEver.seconds + " s)";
+      bestZoneEver.name + " (" + bestZoneEver.seconds + " s)";
+    document.getElementById("bestZoneMedal").classList.add("unlocked");
   } else {
     document.getElementById("bestZone").innerText =
       "Noch keine Zonen-Daten";
