@@ -1312,6 +1312,41 @@ window.onload = function() {
   }
 };
 
+function formatZoneTooltip(context) {
+
+  const index = context.dataIndex;
+
+  const secondsArray = [
+    zoneCounters.Extrem,
+    zoneCounters.Anaerob,
+    zoneCounters.Aerob,
+    zoneCounters.Fettverbrennung,
+    zoneCounters.Gesundheitszone
+  ];
+
+  const seconds = secondsArray[index];
+  const total = secondsArray.reduce((a,b)=>a+b,0);
+
+  if (total === 0) return "00:00 (0,00 %)";
+
+  // Prozent
+  const percent = ((seconds / total) * 100)
+    .toFixed(2)
+    .replace(".", ",");
+
+  // mm:ss
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  const timeFormatted =
+    String(min).padStart(2,"0") + ":" +
+    String(sec).padStart(2,"0");
+
+  return [
+    percent + " %",
+    timeFormatted
+  ];
+}
+
 function toggleTraining() {
   const age = parseInt(document.getElementById("ageInput").value);
   if (!age) {
@@ -1364,8 +1399,14 @@ function toggleTraining() {
         options: {
           cutout: "70%",
           plugins: {
-            legend: {display: false},
-            percentageLabels: {}
+            legend: { display: false },
+            percentageLabels: {},
+            tooltip: {
+              callbacks: {
+                label: formatZoneTooltip
+              },
+              displayColors: false
+            }
           }
         }
       });
