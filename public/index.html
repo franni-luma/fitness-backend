@@ -1953,7 +1953,7 @@ function checkMedals() {
   if (totalTrainings >= 1) {
     firstTrainingMedal.classList.add("unlocked");
     firstTrainingDesc.innerText = "Du hast dein erstes Training absolviert!";
-    showMedalPopup("medalFirstTraining", "Erstes Training freigeschaltet!", "<img src='images/firsttraining.png' class='popupIcon'>");
+    showMedalPopup("medalFirstTraining", "Erstes Training absolviert!", "<img src='images/firsttraining.png' class='popupIcon'>");
   } else {
     firstTrainingMedal.classList.remove("unlocked");
     firstTrainingDesc.innerText = "Starte dein erstes Training";
@@ -1962,13 +1962,13 @@ function checkMedals() {
   // 1 Stunde Gesamt
   if (totalSeconds >= 3600) {
     document.getElementById("medal1Hour").classList.add("unlocked");
-    showMedalPopup("medal1Hour", "1 Stunde Training erreicht!", "<img src='images/1hTraining.png' class='popupIcon'>");
+    showMedalPopup("medal1Hour", "Du hast 1 Stunde trainiert!", "<img src='images/1hTraining.png' class='popupIcon'>");
   }
 
   // 5 Trainings
   if (totalTrainings >= 5) {
     document.getElementById("medal5Trainings").classList.add("unlocked");
-    showMedalPopup("medal5Trainings", "5 Trainings abgeschlossen!", "<img src='images/5Trainings.png' class='popupIcon'>");
+    showMedalPopup("medal5Trainings", "Du hast 5 Trainings abgeschlossen!", "<img src='images/5Trainings.png' class='popupIcon'>");
   }
 
   // 10 Minuten Aerob-Zone
@@ -2070,7 +2070,8 @@ function calculateBestStats() {
 
     if (maxMonth > savedMonthRecord) {
       localStorage.setItem("record_bestMonth", maxMonth);
-      showMedalPopup("bestMonth_" + maxMonth, `Neuer Rekord: ${maxMonth} Trainings in einem Monat!`, "<img src='images/meistentrainingsMonat.png' class='popupIcon'>");
+      const text_popup = maxMonth === 1 ? `1 Training` : `${maxMonth} Trainings`;
+      showMedalPopup("bestMonth_" + maxMonth, `Neuer Rekord: ${text_popup} in einem Monat!`, "<img src='images/meistentrainingsMonat.png' class='popupIcon'>");
     }
   }
 
@@ -2090,7 +2091,7 @@ function calculateBestStats() {
 
   // Längste Trainingsstreak
   const longestStreak  = calculateLongestStreakEver();
-  
+
   if (longestStreak > 0) {
     const text = longestStreak === 1 ? "1 Tag" : longestStreak + " Tage";
 
@@ -2101,7 +2102,7 @@ function calculateBestStats() {
 
     if (longestStreak > savedStreakRecord) {
       localStorage.setItem("record_bestStreak", longestStreak);
-      showMedalPopup("bestStreak_" + longestStreak, `Neuer Rekord: ${text} Trainings in Folge!`, "<img src='images/längsteTrainingstreak.png' class='popupIcon'>");
+      showMedalPopup("bestStreak_" + longestStreak, `Neuer Rekord: ${text} in Folge trainiert!`, "<img src='images/längsteTrainingstreak.png' class='popupIcon'>");
     }
   } else {
     document.getElementById("besttrainingstreak").innerText = "--";
