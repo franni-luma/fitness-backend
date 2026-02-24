@@ -1884,7 +1884,7 @@ function checkMedals() {
   if (totalTrainings >= 1) {
     firstTrainingMedal.classList.add("unlocked");
     firstTrainingDesc.innerText = "Du hast dein erstes Training absolviert!";
-    showMedalPopup("medalFirstTraining", "Erstes Training freigeschaltet!", "🥇");
+    showMedalPopup("medalFirstTraining", "Erstes Training freigeschaltet!", "<img src='images/firsttraining.png' class='popupIcon'>");
   } else {
     firstTrainingMedal.classList.remove("unlocked");
     firstTrainingDesc.innerText = "Starte dein erstes Training";
@@ -1893,19 +1893,19 @@ function checkMedals() {
   // 1 Stunde Gesamt
   if (totalSeconds >= 3600) {
     document.getElementById("medal1Hour").classList.add("unlocked");
-    showMedalPopup("medal1Hour", "1 Stunde Training erreicht!", "⏱️");
+    showMedalPopup("medal1Hour", "1 Stunde Training erreicht!", "<img src='images/1hTraining.png' class='popupIcon'>");
   }
 
   // 5 Trainings
   if (totalTrainings >= 5) {
     document.getElementById("medal5Trainings").classList.add("unlocked");
-    showMedalPopup("medal5Trainings", "5 Trainings abgeschlossen!", "🏆");
+    showMedalPopup("medal5Trainings", "5 Trainings abgeschlossen!", "<img src='images/5Trainings.png' class='popupIcon'>");
   }
 
   // 10 Minuten Aerob-Zone
   if (zoneCounters.Aerob >= 600) {
     document.getElementById("medalZoneMaster").classList.add("unlocked");
-    showMedalPopup("medalZoneMaster", "Du hast 10 Minuten in der Aerob - Zone trainiert!", "🔥");
+    showMedalPopup("medalZoneMaster", "Du hast 10 Minuten in der Aerob - Zone trainiert!", "<img src='images/10MinAerob.png' class='popupIcon'>");
   }
 
   // Trainings-Streak prüfen
@@ -1914,6 +1914,8 @@ function checkMedals() {
   for (let i = 1; i <= 7; i++) {
     if (streak >= i) {
       document.getElementById("streak"+i).classList.add("unlocked");
+      const days = i === 1 ? "1 Tag" : i + " Tage";
+      showMedalPopup("streak" + i, "Du hast " + days + " in Folge trainiert!", "<img src='images/streak" + i + ".png' class='popupIcon'>");
     }
   }
 }
@@ -1960,7 +1962,7 @@ function calculateBestStats() {
   const longest = Math.max(...trainings.map(t => t.duration));
   document.getElementById("bestDuration").innerText = formatDuration(longest);
   document.getElementById("bestDurationMedal").classList.add("unlocked");
-  showMedalPopup("bestDurationMedal", "Du hast eine neu Bestzeit!", "🤩");
+  showMedalPopup("bestDurationMedal", "Du hast eine neu Bestzeitdauer!", "<img src='images/längstesTraining.png' class='popupIcon'>");
 
   // Meiste Trainings in 1 Monat
   let monthCount = {};
@@ -1997,7 +1999,7 @@ function calculateBestStats() {
   if (bestZoneEver.seconds > 0) {
     document.getElementById("bestZone").innerText = bestZoneEver.name + " (" + formatDuration(bestZoneEver.seconds) + ")";
     document.getElementById("bestZoneMedal").classList.add("unlocked");
-    showMedalPopup("bestZoneMedal", "Du hast eine neu Bestzeit!", "🤩");
+    showMedalPopup("bestZoneMedal", "Du hast eine neu Bestzeitzone!", "<img src='images/längsteZone.png' class='popupIcon'>");
   } else {
     document.getElementById("bestZone").innerText = "Noch keine Zonen-Daten";
   }
