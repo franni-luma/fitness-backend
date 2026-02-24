@@ -972,6 +972,13 @@ let zoneCounters = {
   Anaerob: 0,
   Extrem: 0
 };
+const zoneConfig = [
+  { key: "Extrem", color: "#ff0000", label: "Extrem" },
+  { key: "Anaerob", color: "#ff8800", label: "Anaerob" },
+  { key: "Aerob", color: "#00cc66", label: "Aerob" },
+  { key: "Fettverbrennung", color: "#3cc6ff", label: "Fettverbrennung" },
+  { key: "Gesundheitszone", color: "#8888ff", label: "Gesundheit" }
+];
 let trainingStartTime = null;
 let timerInterval = null;
 let zoneChart;
@@ -986,7 +993,6 @@ const itemsPerPage = 5;
 
 let medalQueue = [];
 let medalPopupActive = false;
-
 
 Chart.register({
   id: "percentageLabels",
@@ -1542,85 +1548,33 @@ function updateZoneDisplay() {
 
   if (!calculatedZones) return;
 
-  document.getElementById("zoneTimes").innerHTML = `
-  
-  <div class="zoneRow">
-    <div class="zoneLeftPart" style="color:#ff0000">
-      ● Extrem
-    </div>
-    <div class="zoneTime">
-      ${formatTime(zoneCounters.Extrem)}
-    </div>
-    <div class="zoneRange">
-      (${calculatedZones.Extrem[0]}–${calculatedZones.Extrem[1]} bpm)
-    </div>
-  </div>
+  const container = document.getElementById("zoneTimes");
 
-  <div class="zoneRow">
-    <div class="zoneLeftPart" style="color:#ff8800">
-      ● Anaerob
+  container.innerHTML = zoneConfig.map(zone => `
+    <div class="zoneRow">
+      <div class="zoneLeftPart" style="color:${zone.color}">
+        ● ${zone.label}
+      </div>
+      <div class="zoneTime">
+        ${formatTime(zoneCounters[zone.key])}
+      </div>
+      <div class="zoneRange">
+        (${calculatedZones[zone.key][0]}–${calculatedZones[zone.key][1]} bpm)
+      </div>
     </div>
-    <div class="zoneTime">
-      ${formatTime(zoneCounters.Anaerob)}
-    </div>
-    <div class="zoneRange">
-      (${calculatedZones.Anaerob[0]}–${calculatedZones.Anaerob[1]} bpm)
-    </div>
-  </div>
+  `).join("");
 
-  <div class="zoneRow">
-    <div class="zoneLeftPart" style="color:#00cc66">
-      ● Aerob
-    </div>
-    <div class="zoneTime">
-      ${formatTime(zoneCounters.Aerob)}
-    </div>
-    <div class="zoneRange">
-      (${calculatedZones.Aerob[0]}–${calculatedZones.Aerob[1]} bpm)
-    </div>
-  </div>
-
-  <div class="zoneRow">
-    <div class="zoneLeftPart" style="color:#3cc6ff">
-      ● Fettverbrennung
-    </div>
-    <div class="zoneTime">
-      ${formatTime(zoneCounters.Fettverbrennung)}
-    </div>
-    <div class="zoneRange">
-      (${calculatedZones.Fettverbrennung[0]}–${calculatedZones.Fettverbrennung[1]} bpm)
-    </div>
-  </div>
-
-  <div class="zoneRow">
-    <div class="zoneLeftPart" style="color:#8888ff">
-      ● Gesundheit
-    </div>
-    <div class="zoneTime">
-      ${formatTime(zoneCounters.Gesundheitszone)}
-    </div>
-    <div class="zoneRange">
-      (${calculatedZones.Gesundheitszone[0]}–${calculatedZones.Gesundheitszone[1]} bpm)
-    </div>
-  </div>
-  `;
-
+  // Chart aktualisieren
   if (zoneChart) {
-    const total =
-      zoneCounters.Extrem +
-      zoneCounters.Anaerob +
-      zoneCounters.Aerob +
-      zoneCounters.Fettverbrennung +
-      zoneCounters.Gesundheitszone;
+
+    const total = zoneConfig.reduce((sum, zone) => {
+      return sum + zoneCounters[zone.key];
+    }, 0);
 
     if (total > 0) {
-      zoneChart.data.datasets[0].data = [
-        (zoneCounters.Extrem / total) * 100,
-        (zoneCounters.Anaerob / total) * 100,
-        (zoneCounters.Aerob / total) * 100,
-        (zoneCounters.Fettverbrennung / total) * 100,
-        (zoneCounters.Gesundheitszone / total) * 100
-      ];
+      zoneChart.data.datasets[0].data = zoneConfig.map(zone =>
+        (zoneCounters[zone.key] / total) * 100
+      );
     }
 
     zoneChart.update();
@@ -2114,6 +2068,5 @@ setInterval(() => {
 }, 5000);
 
 </script>
-
 </body>
 </html>
