@@ -994,6 +994,9 @@ let weeklyChart;
 let currentPage = 1;
 const itemsPerPage = 5;
 
+let medalQueue = [];
+let medalPopupActive = false;
+
 
 Chart.register({
   id: "percentageLabels",
@@ -1754,14 +1757,37 @@ function showMedalPopup(id, title, icon) {
 
   localStorage.setItem("medalShown_" + id, "true");
 
-  document.getElementById("popupIcon").innerHTML = icon;
-  document.getElementById("popupText").innerText = title;
+  medalQueue.push({ title, icon });
+
+  if (!medalPopupActive) {
+    showNextMedal();
+  }
+}
+
+function showNextMedal() {
+
+  if (medalQueue.length === 0) {
+    medalPopupActive = false;
+    return;
+  }
+
+  medalPopupActive = true;
+
+  const medal = medalQueue.shift();
+
+  document.getElementById("popupIcon").innerHTML = medal.icon;
+  document.getElementById("popupText").innerText = medal.title;
 
   const popup = document.getElementById("medalPopup");
   popup.classList.add("show");
 
   setTimeout(() => {
     popup.classList.remove("show");
+
+    setTimeout(() => {
+      showNextMedal();
+    }, 300); // Pause zwischen Medaillen
+
   }, 2500);
 }
 
