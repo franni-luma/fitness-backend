@@ -606,7 +606,7 @@ h1 {
     gap: 15px;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
-  
+
   .medalButton {
     right: 5px;
     width: 40px;
@@ -1985,8 +1985,13 @@ function calculateBestStats() {
   const longest = Math.max(...trainings.map(t => t.duration));
   document.getElementById("bestDuration").innerText = formatDuration(longest);
   document.getElementById("bestDurationMedal").classList.add("unlocked");
-  showMedalPopup("bestDurationMedal", "Du hast eine neu Bestzeitdauer!", "<img src='images/längstesTraining.png' class='popupIcon'>");
 
+  const savedRecord = Number(localStorage.getItem("record_bestDuration")) || 0;
+
+  if (longest > savedRecord) {
+    localStorage.setItem("record_bestDuration", longest);
+    showMedalPopup("bestDuration_" + longest, "Neuer Rekord: Längstes Training!", "<img src='images/längstesTraining.png' class='popupIcon'>" );
+  }
   // Meiste Trainings in 1 Monat
   let monthCount = {};
   trainings.forEach(t => {
@@ -2022,7 +2027,10 @@ function calculateBestStats() {
   if (bestZoneEver.seconds > 0) {
     document.getElementById("bestZone").innerText = bestZoneEver.name + " (" + formatDuration(bestZoneEver.seconds) + ")";
     document.getElementById("bestZoneMedal").classList.add("unlocked");
-    showMedalPopup("bestZoneMedal", "Du hast eine neu Bestzeitzone!", "<img src='images/längsteZone.png' class='popupIcon'>");
+    const savedZoneRecord = Number(localStorage.getItem("record_bestZone")) || 0;
+    if (bestZoneEver.seconds > savedZoneRecord) {
+      localStorage.setItem("record_bestZone", bestZoneEver.seconds);
+      showMedalPopup("bestZone_" + bestZoneEver.seconds, "Neuer Rekord: Längste Zone!", "<img src='images/längsteZone.png' class='popupIcon'>");}
   } else {
     document.getElementById("bestZone").innerText = "Noch keine Zonen-Daten";
   }
