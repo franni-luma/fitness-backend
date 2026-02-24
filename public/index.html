@@ -1712,7 +1712,7 @@ function showMedalPopup(id, title, icon) {
 
   localStorage.setItem("medalShown_" + id, "true");
 
-  document.getElementById("popupIcon").innerText = icon;
+  document.getElementById("popupIcon").innerHTML = icon;
   document.getElementById("popupText").innerText = title;
 
   const popup = document.getElementById("medalPopup");
