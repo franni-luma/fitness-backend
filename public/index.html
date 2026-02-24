@@ -158,6 +158,7 @@ h1 {
 .historyTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   margin-top: 10px;
 }
 
@@ -166,10 +167,12 @@ h1 {
   padding: 8px;
   font-weight: 600;
   opacity: 0.6;
+  white-space: nowrap; 
 }
 
 .historyTable td {
   padding: 8px;
+  white-space: nowrap;  
   border-top: 1px solid rgba(255,255,255,0.05);
 }
 
@@ -281,19 +284,6 @@ h1 {
 #pageInfo {
   min-width: 140px;  
   text-align: center;
-}
-
-.historyTable {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;   /* WICHTIG */
-}
-
-.historyTable th,
-.historyTable td {
-  padding: 8px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  white-space: nowrap;   /* verhindert Umbruch */
 }
 
 .historyTable th:nth-child(1),
@@ -1126,12 +1116,51 @@ async function loadLiveValues() {
   }
 }
 
+function createLineChart(canvasId, color, labelText) {
+  return new Chart(document.getElementById(canvasId), {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [{
+        data: [],
+        borderColor: color,
+        tension: 0.4,
+        spanGaps: true,
+        pointRadius: 3,
+        pointHoverRadius: 2,
+        pointHitRadius: 2
+      }]
+    },
+    options: {
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
+      plugins: {
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            title: (context) => context[0].label,
+            label: (context) => `${labelText}: ${Number(context.raw).toFixed(2)}`
+          },
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderWidth: 1,
+          padding: 10,
+          displayColors: false
+        },
+        legend: { display: false }
+      }
+    }
+  });
+}
+
 async function loadData() {
   let url = "/vitals";
 
   if (currentHours === 24) url = "/vitals?range=24h";
   if (currentHours === 168) url = "/vitals?range=7d";
-
   if (currentHours !== 24) {
     const dbg = document.getElementById("debug24h");
     if (dbg) dbg.innerHTML = "";
@@ -1141,7 +1170,6 @@ async function loadData() {
   let data = await res.json();
 
   if (currentHours === 1) {
-
     const now = new Date();
     const cutoff = new Date(now.getTime() - 60 * 60 * 1000);
 
@@ -1174,7 +1202,6 @@ async function loadData() {
     }
 
     hours.forEach(h => {
-
       const formattedHour =
         h.getFullYear() + "-" +
         String(h.getMonth()+1).padStart(2,"0") + "-" +
@@ -1196,7 +1223,6 @@ async function loadData() {
   }
 
   else if (currentHours === 168) {
-
     const now = new Date();
     const days = [];
 
@@ -1209,26 +1235,13 @@ async function loadData() {
     }
 
     days.forEach(day => {
-
       const match = data.find(d => {
         const backendDate = new Date(d.day).toLocaleDateString("de-DE");
         const currentDate = day.toLocaleDateString("de-DE");
         return backendDate === currentDate;
       });
 
-
-      if (match) {
-        lastPulse = Number(match.pulse);
-        lastSpo2 = Number(match.spo2);
-      }
-
-      labels.push(
-        day.toLocaleDateString("de-DE", {
-          day: "2-digit",
-          month: "2-digit"
-        })
-      );
-
+      labels.push(day.toLocaleDateString("de-DE", {day: "2-digit", month: "2-digit"}));
       pulse.push(match ? Number(match.pulse) : null);
       spo2.push(match ? Number(match.spo2) : null);
     });
@@ -1236,91 +1249,14 @@ async function loadData() {
 
   else {
     // 1h
-    labels = data.map(d =>
-      new Date(d.time).toLocaleTimeString("de-DE")
-    );
-
+    labels = data.map(d => new Date(d.time).toLocaleTimeString("de-DE"));
     pulse = data.map(d => Number(d.pulse));
     spo2 = data.map(d => Number(d.spo2));
   }
 
   if (!pulseChart) {
-    pulseChart = new Chart(document.getElementById("pulseChart"), {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [{
-          data: pulse,
-          borderColor: "#ff4d7a",
-          tension: 0.4,
-          spanGaps: true,
-          pointRadius: 3,
-          pointHoverRadius: 2,
-          pointHitRadius: 2
-        }]
-      },
-      options: {
-        interaction: {
-          mode: 'nearest',
-          intersect: false
-        },
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              title: (context) => {return context[0].label;},
-              label: (context) => {return "Puls: " + Number(context.raw).toFixed(2) + " bpm";}},
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#70541',
-            borderWidth: 1,
-            padding: 10,
-            displayColors: false
-          },
-          legend: { display: false }
-        }
-      }
-    });
-
-    spo2Chart = new Chart(document.getElementById("spo2Chart"), {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [{
-          data: spo2,
-          borderColor: "#3cc6ff",
-          tension: 0.4,
-          spanGaps: true,
-          pointRadius: 3,
-          pointHoverRadius: 2,
-          pointHitRadius: 2
-        }]
-      },
-      options: {
-        interaction: {
-          mode: 'nearest',
-          intersect: false
-        },
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              title: (context) => {return context[0].label;},
-              label: (context) => {return "SpO₂: " + Number(context.raw).toFixed(2) + " %";}},
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            borderColor: '#3cc6ff',
-            borderWidth: 1,
-            padding: 10,
-            displayColors: false
-          },
-          legend: { display: false }
-        }
-      }
-    });
-
+    pulseChart = createLineChart("pulseChart", "#ff4d7a", "Puls (bpm)");
+    spo2Chart = createLineChart("spo2Chart", "#3cc6ff", "SpO₂ (%)");
   } else {
     pulseChart.data.labels = labels;
     pulseChart.data.datasets[0].data = pulse;
@@ -1333,7 +1269,6 @@ async function loadData() {
 }
 
 function updateMaxPulse() {
-
   const age = parseInt(document.getElementById("ageInput").value);
 
   if (!age || age <= 0) {
@@ -1345,7 +1280,6 @@ function updateMaxPulse() {
   document.getElementById("maxPulse").innerText = max + " bpm";
 
   localStorage.setItem("age", age);
-
   calculateZones();
 }
 
