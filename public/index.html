@@ -1317,50 +1317,6 @@ function calculateZones() {
 
 }
 
-function displayZoneRanges(zones) {
-  document.getElementById("zoneRangesStyled").innerHTML = `
-    <div class="zoneRangeItem">
-      <div class="zoneRangeLabel">
-        <div class="zoneDot" style="background:#ff0000"></div>
-        Extrem
-      </div>
-      <div>${zones.Extrem[0]} - ${zones.Extrem[1]} bpm</div>
-    </div>
-
-    <div class="zoneRangeItem">
-      <div class="zoneRangeLabel">
-        <div class="zoneDot" style="background:#ff8800"></div>
-        Anaerob
-      </div>
-      <div>${zones.Anaerob[0]} - ${zones.Anaerob[1]} bpm</div>
-    </div>
-
-    <div class="zoneRangeItem">
-      <div class="zoneRangeLabel">
-        <div class="zoneDot" style="background:#00cc66"></div>
-        Aerob
-      </div>
-      <div>${zones.Aerob[0]} - ${zones.Aerob[1]} bpm</div>
-    </div>
-
-    <div class="zoneRangeItem">
-      <div class="zoneRangeLabel">
-        <div class="zoneDot" style="background:#3cc6ff"></div>
-        Fettverbrennung
-      </div>
-      <div>${zones.Fettverbrennung[0]} - ${zones.Fettverbrennung[1]} bpm</div>
-    </div>
-
-    <div class="zoneRangeItem">
-      <div class="zoneRangeLabel">
-        <div class="zoneDot" style="background:#8888ff"></div>
-        Gesundheit
-      </div>
-      <div>${zones.Gesundheitszone[0]} - ${zones.Gesundheitszone[1]} bpm</div>
-    </div>
-  `;
-}
-
 window.onload = function() {
   const savedAge = localStorage.getItem("age");
   if (savedAge) {
