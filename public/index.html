@@ -2038,6 +2038,7 @@ function calculateBestStats() {
     localStorage.setItem("record_bestDuration", longest);
     showMedalPopup("bestDuration_" + longest, "Neuer Rekord: Längstes Training!", "<img src='images/längstesTraining.png' class='popupIcon'>" );
   }
+
   // Meiste Trainings in 1 Monat
   let monthCount = {};
   trainings.forEach(t => {
@@ -2059,12 +2060,18 @@ function calculateBestStats() {
   if (bestMonthKey) {
     const [year, month] = bestMonthKey.split("-");
     const date = new Date(year, month - 1);
-
     const monthName = date.toLocaleDateString("de-DE", {month: "long", year: "numeric"});
-
     const text = maxMonth === 1 ? `1 Training im ${monthName}` : `${maxMonth} Trainings im ${monthName}`;
+
     document.getElementById("bestMonth").innerText = text;
     document.getElementById("bestMonthMedal").classList.add("unlocked");
+
+    const savedMonthRecord = Number(localStorage.getItem("record_bestMonth")) || 0;
+
+    if (maxMonth > savedMonthRecord) {
+      localStorage.setItem("record_bestMonth", maxMonth);
+      showMedalPopup("bestMonth_" + maxMonth, `Neuer Rekord: ${maxMonth} Trainings in einem Monat!`, "<img src='images/meistentrainingsMonat.png' class='popupIcon'>");
+    }
   }
 
   // Längste Zone 
@@ -2083,10 +2090,19 @@ function calculateBestStats() {
 
   // Längste Trainingsstreak
   const longestStreak  = calculateLongestStreakEver();
-  if (longestStreak  > 0) {
+  
+  if (longestStreak > 0) {
     const text = longestStreak === 1 ? "1 Tag" : longestStreak + " Tage";
+
     document.getElementById("besttrainingstreak").innerText = text;
     document.getElementById("besttrainingstreakMedal").classList.add("unlocked");
+
+    const savedStreakRecord = Number(localStorage.getItem("record_bestStreak")) || 0;
+
+    if (longestStreak > savedStreakRecord) {
+      localStorage.setItem("record_bestStreak", longestStreak);
+      showMedalPopup("bestStreak_" + longestStreak, `Neuer Rekord: ${text} Trainings in Folge!`, "<img src='images/längsteTrainingstreak.png' class='popupIcon'>");
+    }
   } else {
     document.getElementById("besttrainingstreak").innerText = "--";
   }
